@@ -33,7 +33,7 @@ const {doctors}=useContext(AppContext);
         ))}
       </div>
       <div className="flex justify-center mt-6">
-        <button className="px-6 py-2 bg-blue-500 text-white rounded-lg transition-colors duration-300 hover:bg-blue-600">
+        <button onClick={()=>{navigate("/doctors");scrollTo(0,0 )}} className="px-6 py-2 bg-blue-500 text-white rounded-lg transition-colors duration-300 hover:bg-blue-600">
           More
         </button>
       </div>
