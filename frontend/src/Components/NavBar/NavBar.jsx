@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import "./NavBar.css";
 import { NavLink, useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
+
 const NavBar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [token, setToken] = useState(true);
+
   return (
-    <div className="flex flex-wrap items-center justify-between px-5 py-3 mb-5 border-b border-gray-400 shadow-lg bg-white">
+    <div className="flex items-center justify-between px-5 py-3 mb-5 border-b border-gray-400 shadow-lg bg-white">
       <h1 className="text-xl md:text-2xl font-bold text-blue-600">
         Medscription
       </h1>
-      <ul className="flex flex-col md:flex-row md:space-x-4 mt-3 md:mt-0">
+      <ul className="flex flex-col md:flex-row md:space-x-4 mt-3 md:mt-0 ml-auto">
         <NavLink
           exact
           to="/"
@@ -45,15 +47,15 @@ const NavBar = () => {
       <div>
         {token ? (
           <div className="flex items-center gap-2 cursor-pointer group relative">
-            <img className="w-8 rounded-full" src={assets.profile_pic} alt="" />{/* need to add your own image */}
-             <img className="w-2.5 " src={assets.dropdown_icon} alt="" />
-             <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
-              <div  className="min-w-28 bg-stone-100 rounded flex flex-col gap-4 p-4">
-                <p onClick={()=>navigate("/my-profile")} className="hover:text-black cursor-pointer">My Profile</p>
-                <p onClick={()=>navigate("/my-appointments")} className="hover:text-black cursor-pointer">My Appointments</p>
-                <p onClick={()=>{setToken(false)}} className="hover:text-black cursor-pointer">Logout</p>
+            <img className="w-8 rounded-full" src={assets.profile_pic} alt="" />
+            <img className="w-2.5 " src={assets.dropdown_icon} alt="" />
+            <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
+              <div className="min-w-28 bg-stone-100 rounded flex flex-col gap-4 p-4">
+                <p onClick={() => navigate("/my-profile")} className="hover:text-black cursor-pointer">My Profile</p>
+                <p onClick={() => navigate("/my-appointments")} className="hover:text-black cursor-pointer">My Appointments</p>
+                <p onClick={() => { setToken(false); }} className="hover:text-black cursor-pointer">Logout</p>
               </div>
-             </div>
+            </div>
           </div>
         ) : (
           <button
