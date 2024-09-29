@@ -11,7 +11,7 @@ const SpecialityMenu = () => {
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {specialityData.map((item, index) => (
-          <Link
+          <Link onClick={()=>scrollTo(0,0)}
             key={index}
             to={`/doctors/${item.speciality}`}
             className="flex flex-col items-center border rounded-lg p-4 shadow hover:shadow-lg transition-shadow duration-300"
