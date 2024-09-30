@@ -10,28 +10,24 @@ import MyAppointments from "./Pages/MyAppointments";
 import Appointment from "./Pages/Appointment";
 import Contact from "./Pages/Contact";
 import Footer from "./Components/Footer/Footer";
+
 const App = () => {
   return (
     <div className="mx-4 sm:mx-[10%]">
-      <NavBar></NavBar>
+      <NavBar />
       <Routes>
-        <Route path="/" element={<Home></Home>}></Route>
-        <Route path="/doctors" element={<Doctor></Doctor>}></Route>
-        <Route path="/doctos/:speciality" element={<Doctor></Doctor>}></Route>
-        <Route path="/login" element={<Login></Login>}></Route>
-        <Route path="/about" element={<About></About>}></Route>
-        <Route path="/contact" element={<Contact></Contact>}></Route>
-        <Route path="/my-profile" element={<MyProfile></MyProfile>}></Route>
-        <Route
-          path="/my-appointments"
-          element={<MyAppointments></MyAppointments>}
-        ></Route>
-        <Route
-          path="/appointment/:docId"
-          element={<Appointment></Appointment>}
-        ></Route>
+        <Route path="/" element={<Home />} />
+        <Route path="/doctors" element={<Doctor />} />
+        {/* Fixed the typo from 'doctos' to 'doctors' */}
+        <Route path="/doctors/:speciality" element={<Doctor />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/my-profile" element={<MyProfile />} />
+        <Route path="/my-appointments" element={<MyAppointments />} />
+        <Route path="/appointment/:docId" element={<Appointment />} />
       </Routes>
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 };

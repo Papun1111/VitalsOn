@@ -11,7 +11,7 @@ const {doctors}=useContext(AppContext);
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Top Doctors to Book</h1>
       <p className="text-gray-600 mb-6">Simply browse through our extensive list of trusted doctors</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {doctors.slice(0, 10).map((item, index) => (
+        {doctors.slice(0, 12).map((item, index) => (
           <div onClick={()=>(navigate(`/appointment/${item._id}`))}
             key={index}
             className="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105 hover:shadow-xl"
