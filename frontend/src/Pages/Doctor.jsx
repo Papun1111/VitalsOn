@@ -1,59 +1,59 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import {AppContext} from "../Context/AppContext"
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { AppContext } from "../Context/AppContext";
+
 const Doctor = () => {
-  const {speciality}=useParams();
-  const {doctors}=useContext(AppContext);  
-  const [filterDoc,setFilterDoc]=useState([]);
-  const applyFilter=()=>{
-    if(speciality){
-      setFilterDoc(doctors.filter(doc=>doc.speciality===speciality))
-    }else{
-      setFilterDoc(doctors)
+  const { speciality } = useParams();
+  const { doctors } = useContext(AppContext);
+  const [filterDoc, setFilterDoc] = useState([]);
+  const navigate = useNavigate();
+
+  const applyFilter = () => {
+    if (!doctors) return; // Guard clause if doctors is undefined or null
+    if (speciality) {
+      setFilterDoc(doctors.filter(doc => doc.speciality === speciality));
+    } else {
+      setFilterDoc(doctors);
     }
-  }
-  useEffect(()=>{
-applyFilter()
-  },[doctors,speciality]);
+  };
+
+  useEffect(() => {
+    applyFilter();
+  }, [speciality]); // Optimized to only re-run on speciality change
+
   return (
-    <div>
-      <p>
-        Browser through the doctors specialist.
-      </p>
-      <div>
-      <div>
-        <p>General physician</p>
-        <p>Gynecologist</p>
-        <p>Dermatologist</p>
-        <p>Pediatricians</p>
-        <p>Neurologist</p>
-        <p>Gastroenterologist</p>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold text-center mb-10">Browse through the doctor specialists</h1>
+      <div className="flex flex-wrap justify-center gap-4 mb-8">
+        <p style={speciality==="General Physician"?{backgroundColor:"black"}:{}}  onClick={()=>speciality==="General Physician"?navigate("/doctors"):navigate("/doctors/General Physician")} className="bg-blue-100 text-blue-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-blue-200 transition-colors">General Physician</p>
+        <p style={speciality==="Gynecologist"?{backgroundColor:"black"}:{}} onClick={()=>speciality==="Gynecologist"?navigate("/doctors"):navigate("/doctors/Gynecologist")} className="bg-pink-100 text-pink-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-pink-200 transition-colors">Gynecologist</p>
+        <p style={speciality==="Dermatologist"?{backgroundColor:"black"}:{}}  onClick={()=>speciality==="Dermatologist"?navigate("/doctors"):navigate("/doctors/Dermatologist")} className="bg-green-100 text-green-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-green-200 transition-colors">Dermatologist</p>
+        <p style={speciality==="Pediatricians"?{backgroundColor:"black"}:{}}  onClick={()=>speciality==="Pediatricians"?navigate("/doctors"):navigate("/doctors/Pediatricians")} className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-yellow-200 transition-colors">Pediatricians</p>
+        <p style={speciality==="Neurologist"?{backgroundColor:"black"}:{}}  onClick={()=>speciality==="Neurologist"?navigate("/doctors"):navigate("/doctors/Neurologist")} className="bg-purple-100 text-purple-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-purple-200 transition-colors">Neurologist</p>
+        <p style={speciality==="Gastroenterologist"?{backgroundColor:"black"}:{}} onClick={()=>speciality==="Gastroenterologist"?navigate("/doctors"):navigate("/doctors/Gastroenterologist")} className="bg-red-100 text-red-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-red-200 transition-colors">Gastroenterologist</p>
       </div>
-      <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filterDoc.map((item, index) => (
-          <div onClick={()=>(navigate(`/appointment/${item._id}`))}
+          <div 
+            onClick={() => navigate(`/appointment/${item._id}`)}
             key={index}
-            className="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105 hover:shadow-xl"
+            className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105"
           >
             <img 
               src={item.image} 
               alt={item.name} 
-              className="w-full h-48 object-contain" // Use object-contain for full visibility
+              className="w-full h-48 object-cover" // Ensures image fits without stretching
             />
-            <div className="mt-4 p-4">
-              <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-500"></p>
-                <p className="text-sm text-green-500 font-semibold">Available</p>
-              </div>
-              <p className="text-lg font-semibold text-gray-800 mt-2">{item.name}</p>
+            <div className="p-4">
+              <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
               <p className="text-gray-600">{item.speciality}</p>
+              <p className="text-sm text-green-500 font-semibold">Available</p>
             </div>
           </div>
         ))}
       </div>
-      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Doctor
+export default Doctor;
