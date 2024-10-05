@@ -8,7 +8,7 @@ const Login = () => {
     const value = e.target.value;
     setCredentials((data) => ({ ...data, [name]: value }));
   };
-  const onSubmit=(e)=>{
+  const onSubmitHandler=(e)=>{
 e.preventDefault();
   }
   const toggleForm = () => {
@@ -19,7 +19,7 @@ console.log(credentials);
 },[credentials])
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <form className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm" onSubmit={(e) => e.preventDefault()}>
+      <form  className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm" onSubmit={onSubmitHandler}>
         <p className="text-lg font-semibold mb-4">
           Please {state.toLowerCase()} to book an appointment
         </p>
