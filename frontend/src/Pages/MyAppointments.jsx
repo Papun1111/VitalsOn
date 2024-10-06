@@ -8,7 +8,7 @@ const MyAppointments = () => {
     <div className="p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">My Appointments</h2>
       <div className="space-y-4">
-        {doctors.slice(0, 2).map((item, index) => (
+        {doctors.slice(0, 4).map((item, index) => (
           <div key={index} className="flex p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-300 ease-in-out">
             <div className="flex-shrink-0">
               <img className="h-24 w-24 rounded-full object-cover" src={item.image} alt={item.name} />

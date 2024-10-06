@@ -25,6 +25,7 @@ const Doctor = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-center mb-10">Browse through the doctor specialists</h1>
       <div className="flex flex-wrap justify-center gap-4 mb-8">
+        <button>Filters</button>
         <p style={speciality==="General physician"?{backgroundColor:"black"}:{}}  onClick={()=>speciality==="General physician"?navigate("/doctors"):navigate("/doctors/General physician")} className="bg-blue-100 text-blue-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-blue-200 transition-colors">General Physician</p>
         <p style={speciality==="Gynecologist"?{backgroundColor:"black"}:{}} onClick={()=>speciality==="Gynecologist"?navigate("/doctors"):navigate("/doctors/Gynecologist")} className="bg-pink-100 text-pink-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-pink-200 transition-colors">Gynecologist</p>
         <p style={speciality==="Dermatologist"?{backgroundColor:"black"}:{}}  onClick={()=>speciality==="Dermatologist"?navigate("/doctors"):navigate("/doctors/Dermatologist")} className="bg-green-100 text-green-800 px-4 py-2 rounded shadow cursor-pointer hover:bg-green-200 transition-colors">Dermatologist</p>
