@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import "dotenv/config"
 import bodyParser from "body-parser"
+import connectCloudinary from "./config/cloudinary.js"
 //app config
 import dbcall from "./config/db.js"
 const app=express();
@@ -24,4 +25,5 @@ app.get("/",(req,res)=>{
 app.listen(port,()=>{
 console.log("server running of port",port);
 dbcall();
+connectCloudinary();
 });
