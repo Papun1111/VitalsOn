@@ -20,5 +20,5 @@ const doctorSchema = schema(
 );
 
 const doctorModel =
-  mongoose.models.doctor || mongoose.model("doctorModel", doctorSchema);
+  mongoose.models.doctor || mongoose.model("doctor", doctorSchema);
 export default doctorModel;
