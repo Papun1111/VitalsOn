@@ -2,7 +2,8 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+
 const addDoctor = async (req, res) => {
     try {
         const {
@@ -14,13 +15,14 @@ const addDoctor = async (req, res) => {
             experience,
             about,
             fee,
-            address
+            address1,
+            address2
         } = req.body;
 
         const imageFile = req.file;
 
         // Check for missing fields
-        if (!name || !email || !password || !speciality || !degree || !experience || !about || !fee || !address || !imageFile) {
+        if (!name || !email || !password || !speciality || !degree || !experience || !about || !fee || !imageFile) {
             return res.status(400).json({ success: false, message: "Invalid Request! Missing details" });
         }
 
@@ -52,7 +54,7 @@ const addDoctor = async (req, res) => {
             experience,
             about,
             fee,
-            address: JSON.parse(address),
+            address: { line1: address1, line2: address2 },
             date: Date.now()
         };
 
@@ -61,23 +63,24 @@ const addDoctor = async (req, res) => {
         res.status(201).json({ success: true, message: "Doctor added successfully" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: "An error occurred while adding the doctor." });
     }
 };
-//auth api
-const loginAdmin=async(req,res)=>{
-try {
-    const{email,password}=req.body;
-    if (email==process.env.ADMIN_EMAIL && password==process.env.ADMIN_PASSWORD) {
-const token=jwt.sign(email+password,process.env.JWT_SECRET);
-res.json({success:true,token})        
-    }else{
-res.json({success:false,message:"Invalid credentials"})
-    }
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: error.message });  
-}
-}
 
-export { addDoctor ,loginAdmin};
+// Auth API
+const loginAdmin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            const token = jwt.sign(email + password, process.env.JWT_SECRET);
+            res.json({ success: true, token });
+        } else {
+            res.json({ success: false, message: "Invalid credentials" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "An error occurred during login." });
+    }
+};
+
+export { addDoctor, loginAdmin };
