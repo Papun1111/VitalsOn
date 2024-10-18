@@ -1,7 +1,8 @@
+import mongoose from "mongoose";
 import { Schema } from "mongoose";
 const userSchema = new Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true, unique },
+  email: { type: String, required: true, unique:true },
   password: { type: String, required: true },
   address: { type: Object, required: true, default: { line1: "", line2: "" } },
   image: {
@@ -11,7 +12,7 @@ const userSchema = new Schema({
   },
   gender: { type: String, default: "not selected" },
   dob: { type: String, default: "not selected" },
-  phone: { type: String, default: "+916767676767", unique: true },
+  phone: { type: String, default: "+916767676767", },
 });
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
 export default userModel;
