@@ -1,30 +1,71 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { AppContext } from '../Context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [state, setState] = useState("Sign up"); 
+  const { backendUrl, token, setToken } = useContext(AppContext);
+  const [isSignUp, setIsSignUp] = useState(true); 
   const [credentials, setCredentials] = useState({ name: "", email: "", password: "" });
+const navigate=useNavigate();
   const onChangeHandler = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setCredentials((data) => ({ ...data, [name]: value }));
+    const { name, value } = e.target;
+    setCredentials((prev) => ({ ...prev, [name]: value }));
   };
-  const onSubmitHandler=(e)=>{
-e.preventDefault();
-  }
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      if (isSignUp) {
+        const { data } = await axios.post(`${backendUrl}/api/user/register`, credentials);
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+          toast.success("Registration successful!");
+          setCredentials({ name: "", email: "", password: "" });
+          
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post(`${backendUrl}/api/user/login`, {
+          email: credentials.email,
+          password: credentials.password,
+        });
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+          toast.success("Login successful!");
+          setCredentials({email: "", password: "" });
+      
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "An error occurred. Please try again.");
+    }
+  };
+
   const toggleForm = () => {
-    setState(current => (current === "Sign up" ? "Login" : "Sign up"));
+    setIsSignUp((prev) => !prev);
   };
-useEffect(()=>{
-console.log(credentials);
-},[credentials])
+
+  useEffect(() => {
+   if(token){
+    navigate("/")
+   }
+  }, [token]);
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <form  className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm" onSubmit={onSubmitHandler}>
+      <form className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm" onSubmit={onSubmitHandler}>
         <p className="text-lg font-semibold mb-4">
-          Please {state.toLowerCase()} to book an appointment
+          Please {isSignUp ? "sign up" : "login"} to book an appointment
         </p>
         
-        {state === "Sign up" && (
+        {isSignUp && (
           <div className="mb-4">
             <label htmlFor="name" className="block text-gray-700">Full Name</label>
             <input 
@@ -43,10 +84,10 @@ console.log(credentials);
           <input 
             type="email" 
             name="email" 
-            value={credentials.email}
             placeholder="Enter your email"
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             onChange={onChangeHandler}
+            value={credentials.email}
           />
         </div>
         
@@ -63,11 +104,12 @@ console.log(credentials);
         </div>
         
         <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
-          {state === "Sign up" ? "Create Account" : "Login"}
+          {isSignUp ? "Create Account" : "Login"}
         </button>
+        
         <p className="text-center mt-4">
           <button type="button" onClick={toggleForm} className="text-blue-500 hover:text-blue-600 transition-colors duration-300">
-            {state === "Sign up" ? "Already have an account? Login" : "No account? Sign up"}
+            {isSignUp ? "Already have an account? Login" : "No account? Sign up"}
           </button>
         </p>
       </form>
