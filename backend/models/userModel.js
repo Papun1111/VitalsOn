@@ -12,7 +12,7 @@ const userSchema = new Schema({
   },
   gender: { type: String, default: "not selected" },
   dob: { type: String, default: "not selected" },
-  phone: { type: String, default: "+916767676767", },
+  phone: { type: String },
 });
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
 export default userModel;
