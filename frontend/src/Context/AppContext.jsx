@@ -34,7 +34,7 @@ const getDoctorsData=async () => {
     }
 }
 const value = {
-    doctors,
+    doctors,getDoctorsData,
     currencySymbol,backendUrl,token,setToken,userData,setUserData,loadUserProfileData
 };
 useEffect(()=>{
