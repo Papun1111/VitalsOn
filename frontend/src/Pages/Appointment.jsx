@@ -15,7 +15,22 @@ const Appointment = () => {
   const [docSlots, setDocSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
   const [slotTime, setSlotTime] = useState('');
-  
+  const [userBookedSlots, setUserBookedSlots] = useState([]);
+
+  const fetchUserBookedSlots = async () => {
+    if (!token) return;
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/user/my-booked-slots`, {
+        headers: { token }
+      });
+      if (data.success) {
+        setUserBookedSlots(data.bookedSlots); // Assuming bookedSlots is an array of { date, time }
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   const bookAppointment = async () => {
     if (!token) {
       toast.warn("Login to book appointment");
@@ -39,7 +54,7 @@ const Appointment = () => {
       if (data.success) {
         toast.success(data.message);
         getDoctorsData();
-        navigate("/my-appointment");
+        navigate("/my-appointments");
       } else {
         toast.error(data.message);
       }
@@ -93,13 +108,26 @@ const Appointment = () => {
         slotsForWeek.push(timeSlots);
       }
 
-      setDocSlots(slotsForWeek);
+      // Filter out the booked slots for the current user
+      const filteredSlots = slotsForWeek.map(daySlots => 
+        daySlots.filter(slot => 
+          !userBookedSlots.some(booked => 
+            booked.time === slot.time && booked.date === daySlots[0]?.datetime.toISOString().split('T')[0] // Compare date
+          )
+        )
+      );
+
+      setDocSlots(filteredSlots);
     };
 
     if (docInfo) {
       getAvailableSlot();
     }
-  }, [docInfo]);
+  }, [docInfo, userBookedSlots]);
+
+  useEffect(() => {
+    fetchUserBookedSlots();
+  }, [token]);
 
   return (
     <div className="container mx-auto px-4 py-6">
