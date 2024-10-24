@@ -2,15 +2,17 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from "../Context/AppContext";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 
 const MyAppointments = () => {
   const { backendUrl, token,getDoctorsData } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
+  const [paymentStatus,setPaymentStatus]=useState("unpaid");
   const months = ["",
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
-
+const location=useLocation();
   const slotDateFormat = (slotDate) => {
     const dateArray = slotDate.split("_");
     return `${dateArray[0]} ${months[Number(dateArray[1])]} ${dateArray[2]}`;
@@ -73,6 +75,34 @@ try {
     }
   }, [token]);
 
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const sessionId = query.get('session_id');
+
+    const verifyPayment = async () => {
+      try {
+        const response = await axios.post('/api/user/verify', { id: sessionId });
+        if (response.data.success) {
+          // Handle successful payment
+          toast.success(response.data.message)
+          getUserAppointments();
+          setPaymentStatus(response.data.session.payment_status);
+          // Show success message or update UI accordingly
+        } else {
+          toast.error(response.data.error);
+          console.error(response.data.message);
+          // Show error message to the user
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle error
+      }
+    };
+
+    if (sessionId) {
+      verifyPayment();
+    }
+  }, [location]);
   return (
     <div className="p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">My Appointments</h2>
@@ -93,7 +123,7 @@ try {
                 </p>
               </div>
               <div className="ml-4 flex flex-col justify-between">
-              {!item.cancelled && <button onClick={()=>appointRazorpay(item._id)} className="mt-2 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
+              {!item.cancelled && paymentStatus=="unpaid" && <button onClick={()=>appointRazorpay(item._id)} className="mt-2 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
                   Pay Online
                 </button>
 }

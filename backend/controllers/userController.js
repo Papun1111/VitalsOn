@@ -202,14 +202,14 @@ const paymentStripe = async (req, res) => {
             product_data: {
               name: `Appointment #${appointmentId}`, // Customize as needed
             },
-            unit_amount: appointmentData.amount * 100, // Amount in cents
+            unit_amount: appointmentData.amount * 153, // Amount in cents
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: "http://localhost:5173/", // Redirect after successful payment
-      cancel_url: "http://localhost:5173/my-appointments/", // Redirect if payment is cancelled
+      success_url: `http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}&appointmentId=${appointmentId}`, // Redirect after successful payment
+      cancel_url: "http://localhost:5173/", // Redirect if payment is cancelled
     });
 
     res.json({ success: true, session });
@@ -218,5 +218,35 @@ const paymentStripe = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+//API to verify the payment 
+const verify = async (req, res) => {
+  try {
+    const { id } = req.body; // Get the session ID from the request body
+    const { appointmentId } = req.query; // Get the appointmentId from the query parameters
 
-export { registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment,cancelAppointment,paymentStripe};
+    // Retrieve the session details from Stripe
+    const session = await stripe.checkout.sessions.retrieve(id);
+    console.log(session);
+
+    // Check if the session exists and is successful
+    if (!session) {
+      return res.json({ success: false, message: "Session not found" });
+    }
+
+    // Check payment status
+    if (session.payment_status === 'paid') {
+      // Update your database to mark the appointment as paid
+      await appointmentModel.findByIdAndUpdate(appointmentId, { payment: true }); // Example update
+
+      return res.json({ success: true, session });
+    } else {
+      return res.json({ success: false, message: "Payment not successful" });
+    }
+  } catch (error) {
+    console.error(error.message);
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+
+export { registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment,cancelAppointment,paymentStripe,verify};
