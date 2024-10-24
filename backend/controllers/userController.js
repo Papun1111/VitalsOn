@@ -5,6 +5,9 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import Stripe from "stripe"
+import razorpay from "razorpay"
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -177,4 +180,30 @@ return res.json({success:false,message:"Unauthorized action"});
     res.json({ success: false, message: error.message });
   }
 }
-export { registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment,cancelAppointment};
+//api for payment gateway
+
+const paymentRayzorPay=async (req,res) => {
+  try {
+    const {appointmentId}=req.body;
+    const appointmentData=await appointmentModel.findById(appointmentId);
+    if(!appointmentData || appointmentData.cancelled){
+      return res.json({success:false,message:"Appointment is cancelled or Not Found"})
+    }
+  //creating options for razor pay 
+  const options={
+    amount:appointmentData.amount*100,
+    currency:process.env.CURRENCY,
+    receipt:appointmentId,
+  }
+  //creation of an Order
+  const order=await stripe.checkout.sessions.create(
+    options
+  )
+  res.json({success:true,order})
+  } catch (error) {
+    console.error(error.message);
+    res.json({ success: false, message: error.message });
+  }
+ 
+}
+export { registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment,cancelAppointment,paymentRayzorPay};
