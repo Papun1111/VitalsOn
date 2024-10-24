@@ -221,8 +221,8 @@ const paymentStripe = async (req, res) => {
 //API to verify the payment 
 const verify = async (req, res) => {
   try {
-    const { id } = req.body; // Get the session ID from the request body
-    const { appointmentId } = req.query; // Get the appointmentId from the query parameters
+    const { id,appointmentId } = req.body; // Get the session ID from the request body
+
 
     // Retrieve the session details from Stripe
     const session = await stripe.checkout.sessions.retrieve(id);
