@@ -51,7 +51,20 @@ const cancelAppointment=async (appointmentId) => {
       toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
   }
 }
-
+const appointRazorpay=async(appointmentId)=>{
+try {
+  const {data}=await axios.post(backendUrl+'/api/user/payment',{appointmentId},{headers:{token}})
+  if(data.success){
+    console.log(data.session);
+    window.location.replace(data.session.url);
+  }else{
+    console.log("error")
+  }
+} catch (error) {
+  console.error(error);
+      toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
+}
+}
   useEffect(() => {
     if (token) {
       getUserAppointments();
@@ -80,7 +93,7 @@ const cancelAppointment=async (appointmentId) => {
                 </p>
               </div>
               <div className="ml-4 flex flex-col justify-between">
-              {!item.cancelled && <button className="mt-2 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
+              {!item.cancelled && <button onClick={()=>appointRazorpay(item._id)} className="mt-2 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
                   Pay Online
                 </button>
 }

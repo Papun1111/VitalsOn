@@ -182,28 +182,41 @@ return res.json({success:false,message:"Unauthorized action"});
 }
 //api for payment gateway
 
-const paymentRayzorPay=async (req,res) => {
+const paymentStripe = async (req, res) => {
   try {
-    const {appointmentId}=req.body;
-    const appointmentData=await appointmentModel.findById(appointmentId);
-    if(!appointmentData || appointmentData.cancelled){
-      return res.json({success:false,message:"Appointment is cancelled or Not Found"})
+    const { appointmentId } = req.body;
+
+    // Fetch the appointment data
+    const appointmentData = await appointmentModel.findById(appointmentId);
+    if (!appointmentData || appointmentData.cancelled) {
+      return res.json({ success: false, message: "Appointment is cancelled or Not Found" });
     }
-  //creating options for razor pay 
-  const options={
-    amount:appointmentData.amount*100,
-    currency:process.env.CURRENCY,
-    receipt:appointmentId,
-  }
-  //creation of an Order
-  const order=await stripe.checkout.sessions.create(
-    options
-  )
-  res.json({success:true,order})
+
+    // Create a Stripe Checkout session
+    const session = await stripe.checkout.sessions.create({
+   // Specify payment method types
+      line_items: [
+        {
+          price_data: {
+            currency: process.env.CURRENCY,
+            product_data: {
+              name: `Appointment #${appointmentId}`, // Customize as needed
+            },
+            unit_amount: appointmentData.amount * 100, // Amount in cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: "http://localhost:5173/", // Redirect after successful payment
+      cancel_url: "http://localhost:5173/my-appointments/", // Redirect if payment is cancelled
+    });
+
+    res.json({ success: true, session });
   } catch (error) {
     console.error(error.message);
     res.json({ success: false, message: error.message });
   }
- 
-}
-export { registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment,cancelAppointment,paymentRayzorPay};
+};
+
+export { registerUser, loginUser, getProfile, updateProfile, bookAppointment,listAppointment,cancelAppointment,paymentStripe};
