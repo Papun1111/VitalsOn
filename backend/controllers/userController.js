@@ -218,7 +218,7 @@ const paymentStripe = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-//API to verify the payment 
+ 
 const verify = async (req, res) => {
   try {
     const { id,appointmentId } = req.body; // Get the session ID from the request body
@@ -234,7 +234,7 @@ const verify = async (req, res) => {
     }
 
     // Check payment status
-    if (session.payment_status === 'paid') {
+    if (session.payment_status == 'paid') {
       // Update your database to mark the appointment as paid
       await appointmentModel.findByIdAndUpdate(appointmentId, { payment: true }); // Example update
 
