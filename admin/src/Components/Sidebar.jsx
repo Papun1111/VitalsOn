@@ -5,7 +5,6 @@ import assets from "../assets/assets";
 
 const Sidebar = () => {
     const { atoken } = useContext(AdminContext);
-    
     return (
         <div className="bg-gray-800 text-white h-full w-64 shadow-lg">
             {atoken && (
