@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { AdminContext } from "../Context/AdminContext.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { DoctorContext } from "../Context/DoctorContext.jsx";
 
 
 const Login = () => {
@@ -9,30 +10,43 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setAToken, backendUrl } = useContext(AdminContext);
-
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
-    try {
-      if (state === "Admin") {
-        const { data } = await axios.post(backendUrl + "/api/admin/login", {
-          email,
-          password,
-        });
-        if (data.success) {
-          console.log(data.token);
-          localStorage.setItem(`aToken`,data.token);
-          setAToken(data.token); 
-          toast.success("Succesfull!")
-        }else{
-         toast.error(data.message); 
-        }
-      } else {
-        
-      }
-    } catch (error) {
-      console.log("Error:", error);
+const{setDToken}=useContext(DoctorContext);
+const onSubmitHandler = async (e) => {
+  e.preventDefault();
+  try {
+    let response;
+    if (state === "Admin") {
+      response = await axios.post(backendUrl + "/api/admin/login", {
+        email,
+        password,
+      });
+    } else {
+      response = await axios.post(backendUrl + "/api/doctor/login", { 
+        email,
+        password,
+      });
     }
-  };
+
+    const { data } = response;
+    if (data.success) {
+      const token = data.token;
+      if (state === "Admin") {
+        localStorage.setItem(`aToken`, token);
+        setAToken(token); 
+      } else {
+        localStorage.setItem(`dToken`, token);
+        setDToken(token); 
+      }
+      toast.success("Successful!");
+    } else {
+      toast.error(data.message); 
+    }
+  } catch (error) {
+    console.log("Error:", error);
+    toast.error("An error occurred. Please try again.");
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
