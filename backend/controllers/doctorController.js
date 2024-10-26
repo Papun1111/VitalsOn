@@ -1,6 +1,7 @@
 import doctorModel from "../models/doctorModel.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import appointmentModel from "../models/appointmentModel.js";
 const changeAvailability=async (req,res) => {
     try {
 const {docId}=req.body;
@@ -42,4 +43,49 @@ return res.json({success:false,message:"Invalid credentials"})
         res.status(500).json({ success: false, message: "Error while fetching doctors" });
     }
 }
-export {changeAvailability,doctorList,loginDoctor};
+const appointmentsDoctor=async (req,res) => {
+    try {
+        const {docId}=req.body;
+        const appointments=await appointmentModel.find({docId});
+        res.json({success:true,appointments});
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: "Error while fetching doctors" });
+    }
+}
+//API FOR DOCTOR
+const appointmentComplete=async (req,res) => {
+    try {
+        const{docId,appointmentId}=req.body;
+        const appointmentData=await appointmentModel.findById(appointmentId)
+        if(appointmentData && appointmentData.docId==docId){
+await appointmentModel.findByIdAndUpdate(appointmentId,{isCompleted:true});
+return res.json({success:true,message:"appointment completed"})
+
+        }
+        return res.json({success:false,message:"appointment completed"})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: "Error while fetching doctors" });
+    }
+}
+//cancel appointment from doc side
+const appointmentCancel=async (req,res) => {
+    try {
+        const{docId,appointmentId}=req.body;
+        const appointmentData=await appointmentModel.findById(appointmentId)
+        if(appointmentData && appointmentData.docId==docId){
+await appointmentModel.findByIdAndUpdate(appointmentId,{cancelled:true});
+return res.json({success:true,message:"appointment cancelled"})
+
+        }
+        return res.json({success:false,message:"ERRR"})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: "Error while fetching doctors" });
+    }
+}
+export {changeAvailability,doctorList,loginDoctor,appointmentsDoctor,appointmentComplete,appointmentCancel};
