@@ -31,7 +31,7 @@ const RelatedDoctors = ({ speciality, docId }) => {
                         <div className="p-4">
                             <p className="text-lg font-semibold text-gray-800">{doctor.name}</p>
                             <p className="text-gray-600">{doctor.speciality}</p>
-                            <p className="text-sm text-green-500 font-semibold mt-1">Available Now</p>
+                            <p className="text-sm text-green-500 font-semibold mt-1">{doctor.available?"Available":"Not Available"}</p>
                         </div>
                     </div>
                 ))}

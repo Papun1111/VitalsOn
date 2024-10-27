@@ -69,7 +69,7 @@ const Doctor = () => {
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
                 <p className="text-gray-600">{item.speciality}</p>
-                <p className="text-sm text-green-500 font-semibold">Available</p>
+                <p className="text-sm text-green-500 font-semibold">{item.available?"Available":"Not Available"}</p>
               </div>
             </div>
           ))

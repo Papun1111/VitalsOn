@@ -119,18 +119,21 @@ const MyAppointments = () => {
                 </p>
               </div>
               <div className="ml-4 flex flex-col justify-between">
-                {!item.cancelled && !item.payment && (
+                {!item.cancelled && !item.payment && !item.isCompleted &&(
                   <button onClick={() => appointRazorpay(item._id)} className="mt-2 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
                     Pay Online
                   </button>
                 )}
-                {!item.cancelled && (
+                {!item.cancelled &&!item.payment&& !item.isCompleted && (
                   <button onClick={() => cancelAppointment(item._id)} className="mt-2 bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition duration-200">
                     Cancel Appointment
                   </button>
                 )}
                 {item.cancelled && (
                   <button className='sm:min-w-48 py-2 border-b-black rounded text-red-500'>Appointment cancelled</button>
+                )}
+                  {item.isCompleted && (
+                  <button className='sm:min-w-48 py-2 border-b-black rounded text-green-500'>Appointment completed</button>
                 )}
               </div>
             </div>

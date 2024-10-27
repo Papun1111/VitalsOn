@@ -24,7 +24,7 @@ const {doctors}=useContext(AppContext);
             <div className="mt-4 p-4">
               <div className="flex justify-between items-center">
                 <p className="text-sm text-gray-500"></p>
-                <p className="text-sm text-green-500 font-semibold">Available</p>
+                <p className={`text-sm text-green-500 font-semibold`}>{item.available?'Available':"Not Available"}</p>
               </div>
               <p className="text-lg font-semibold text-gray-800 mt-2">{item.name}</p>
               <p className="text-gray-600">{item.speciality}</p>

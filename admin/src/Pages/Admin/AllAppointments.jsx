@@ -44,7 +44,7 @@ const AllAppointments = () => {
           </div>
           <p>{currency}{item.amount}</p>
           {item.cancelled?<p className="text-red-600 text-xs font-medium">Cancelled</p>:
-          <img onClick={()=>cancelAppointment(item._id)}
+          item.isCompleted?<p className="text-green-600 text-xs font-medium">Completed</p>:<img onClick={()=>cancelAppointment(item._id)}
           className="w-10 cursor-pointer hover:opacity-75 transition-opacity" 
           src={assets.cancel_icon} 
           alt="Cancel" 
