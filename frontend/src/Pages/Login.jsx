@@ -18,11 +18,7 @@ const navigate=useNavigate();
     e.preventDefault();
     try {
       if (isSignUp) {
-        const { data } = await axios.post(`${backendUrl}/api/user/register`,{
-          email: credentials.email,
-          name:credentials.name,
-          password: credentials.password,
-        } );
+        const { data } = await axios.post(`${backendUrl}/api/user/register`,credentials);
         if (data.success) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
