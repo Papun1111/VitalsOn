@@ -10,7 +10,7 @@ import razorpay from "razorpay"
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password,phone } = req.body;
     if (!name || !email || !password) {
       return res.json({ success: false, message: "Missing details" });
     }
@@ -28,6 +28,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPass,
+      phone
     };
     const newUser = new userModel(userData);
     const user = await newUser.save();

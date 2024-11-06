@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const { backendUrl, token, setToken } = useContext(AppContext);
   const [isSignUp, setIsSignUp] = useState(true); 
-  const [credentials, setCredentials] = useState({ name: "", email: "", password: "" });
+  const [credentials, setCredentials] = useState({ name: "", email: "", password: "",phone:"" });
 const navigate=useNavigate();
   const onChangeHandler = (e) => {
     const { name, value } = e.target;
@@ -23,7 +23,7 @@ const navigate=useNavigate();
           localStorage.setItem("token", data.token);
           setToken(data.token);
           toast.success("Registration successful!");
-          setCredentials({ name: "", email: "", password: "" });
+          setCredentials({ name: "", email: "", password: "",phone:"" });
           
         } else {
           toast.error(data.message);
@@ -65,7 +65,7 @@ const navigate=useNavigate();
           Please {isSignUp ? "sign up" : "login"} to book an appointment
         </p>
         
-        {isSignUp && (
+        {isSignUp && (<div>
           <div className="mb-4">
             <label htmlFor="name" className="block text-gray-700">Full Name</label>
             <input 
@@ -77,6 +77,18 @@ const navigate=useNavigate();
               value={credentials.name}
             />
           </div>
+           <div className="mb-6">
+           <label htmlFor="phone" className="block text-gray-700">Phone</label>
+           <input 
+             type="text" 
+             name="phone" 
+             placeholder="Enter your phone"
+             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+             onChange={onChangeHandler}
+             value={credentials.phone}
+           />
+         </div>
+         </div>
         )}
         
         <div className="mb-4">
@@ -102,6 +114,7 @@ const navigate=useNavigate();
             value={credentials.password}
           />
         </div>
+       
         
         <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors duration-300">
           {isSignUp ? "Create Account" : "Login"}
