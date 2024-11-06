@@ -14,5 +14,5 @@ const userSchema = new Schema({
   dob: { type: String, default: "not selected" },
   phone: { type: String, unique: true, sparse: true }, 
 });
-const userModel = mongoose.models.user || mongoose.model("user", userSchema);
+const userModel =mongoose.model("user", userSchema);
 export default userModel;
