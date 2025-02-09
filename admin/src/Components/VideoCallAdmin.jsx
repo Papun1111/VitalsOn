@@ -1,31 +1,58 @@
 // src/admin/VideoCallAdmin.jsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_SERVER_URL = "http://localhost:1111";
-const ROOM_ID = "abc"; // Hard-coded for demo
+const SOCKET_SERVER_URL = "http://localhost:1111"; // Match your server port
+const ROOM_ID = "abc"; // You can make this dynamic later
 
 export default function VideoCallAdmin() {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const socketRef = useRef(null);
+  const [connectionStatus, setConnectionStatus] = useState("Disconnected");
+  const [error, setError] = useState(null);
 
+  // ICE servers configuration
   const iceServers = {
-    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      { urls: "stun:stun1.l.google.com:19302" }
+    ],
   };
 
   useEffect(() => {
-    // 1. Connect to Socket.IO
-    socketRef.current = io(SOCKET_SERVER_URL, { transports: ["websocket"] });
+    // Reset error state
+    setError(null);
+    setConnectionStatus("Connecting to server...");
 
-    // 2. Get local camera/mic first
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    // 1. Connect to Socket.IO server
+    try {
+      socketRef.current = io(SOCKET_SERVER_URL, { transports: ["websocket"] });
+      setConnectionStatus("Connected to server");
+    } catch (err) {
+      setError("Failed to connect to server");
+      return;
+    }
+
+    // 2. Get local media stream
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
       .then(async (localStream) => {
-        // 3. Create RTCPeerConnection after media acquisition
+        // Display local stream
+        localVideoRef.current.srcObject = localStream;
+        localVideoRef.current.muted = true;
+        setConnectionStatus("Got local media stream");
+
+        // 3. Create RTCPeerConnection
         peerConnectionRef.current = new RTCPeerConnection(iceServers);
 
-        // 4. Setup ICE candidate handler
+        // 4. Add local tracks to peer connection
+        localStream.getTracks().forEach((track) => {
+          peerConnectionRef.current.addTrack(track, localStream);
+        });
+
+        // 5. Handle ICE candidates
         peerConnectionRef.current.onicecandidate = (event) => {
           if (event.candidate) {
             socketRef.current.emit("ice-candidate", {
@@ -35,65 +62,53 @@ export default function VideoCallAdmin() {
           }
         };
 
-        // 5. Setup remote track handler
+        // 6. Handle incoming tracks
         peerConnectionRef.current.ontrack = (event) => {
-          console.log("Admin: Remote stream received:", event.streams[0]);
+          setConnectionStatus("Received remote stream");
           remoteVideoRef.current.srcObject = event.streams[0];
         };
 
-        // 6. Add local tracks to connection
-        localStream.getTracks().forEach((track) => {
-          peerConnectionRef.current.addTrack(track, localStream);
-        });
-
-        // 7. Show local video feed
-        localVideoRef.current.srcObject = localStream;
-        localVideoRef.current.muted = true;
-        await localVideoRef.current.play().catch(console.error);
-
-        // 8. Join room after media setup
+        // 7. Join room
         socketRef.current.emit("join-room", ROOM_ID);
+        setConnectionStatus("Joined room: " + ROOM_ID);
 
-        // 9. Listen for offer from user
+        // 8. Handle incoming offer
         socketRef.current.on("offer", async ({ offer }) => {
-          console.log("Admin: Received offer from user.");
+          setConnectionStatus("Received offer");
           if (!peerConnectionRef.current) return;
-
+          
           try {
-            await peerConnectionRef.current.setRemoteDescription(
-              new RTCSessionDescription(offer)
-            );
+            await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnectionRef.current.createAnswer();
             await peerConnectionRef.current.setLocalDescription(answer);
             
-            socketRef.current.emit("answer", {
-              roomId: ROOM_ID,
-              answer: peerConnectionRef.current.localDescription,
-            });
-            console.log("Admin: Sent answer to user.");
+            socketRef.current.emit("answer", { roomId: ROOM_ID, answer });
+            setConnectionStatus("Sent answer");
           } catch (err) {
-            console.error("Admin: Error handling offer:", err);
+            setError("Failed to handle offer: " + err.message);
           }
         });
+
+        // 9. Handle incoming ICE candidates
+        socketRef.current.on("ice-candidate", async ({ candidate }) => {
+          if (!peerConnectionRef.current || !candidate) return;
+          try {
+            await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+          } catch (err) {
+            setError("Failed to add ICE candidate: " + err.message);
+          }
+        });
+
       })
       .catch((err) => {
-        console.error("Admin: getUserMedia error:", err);
+        setError("Failed to access camera/microphone: " + err.message);
       });
 
-    // 10. Setup ICE candidate listener
-    socketRef.current.on("ice-candidate", async ({ candidate }) => {
-      if (!peerConnectionRef.current || !candidate) return;
-      try {
-        await peerConnectionRef.current.addIceCandidate(
-          new RTCIceCandidate(candidate)
-        );
-      } catch (err) {
-        console.error("Admin: Error adding ICE candidate:", err);
-      }
-    });
-
-    // Cleanup
+    // Cleanup function
     return () => {
+      if (localVideoRef.current?.srcObject) {
+        localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      }
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
       }
@@ -104,22 +119,32 @@ export default function VideoCallAdmin() {
   }, []);
 
   return (
-    <div>
-      <h2>Admin Video Call (Callee) - Room: {ROOM_ID}</h2>
-      <div style={{ display: "flex", gap: "1rem" }}>
-        <video
-          ref={localVideoRef}
-          style={{ width: "300px", backgroundColor: "black" }}
-          autoPlay
-          playsInline
-          muted
-        />
-        <video
-          ref={remoteVideoRef}
-          style={{ width: "300px", backgroundColor: "black" }}
-          autoPlay
-          playsInline
-        />
+    <div className="p-4">
+      <h2 className="text-xl mb-4">Admin Video Call (Callee) - Room: {ROOM_ID}</h2>
+      <div className="mb-4">
+        <p>Status: {connectionStatus}</p>
+        {error && <p className="text-red-500">Error: {error}</p>}
+      </div>
+      <div className="flex gap-4">
+        <div>
+          <h3 className="mb-2">Local Video</h3>
+          <video
+            ref={localVideoRef}
+            className="w-[300px] bg-black"
+            autoPlay
+            playsInline
+            muted
+          />
+        </div>
+        <div>
+          <h3 className="mb-2">Remote Video</h3>
+          <video
+            ref={remoteVideoRef}
+            className="w-[300px] bg-black"
+            autoPlay
+            playsInline
+          />
+        </div>
       </div>
     </div>
   );
