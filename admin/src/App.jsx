@@ -14,6 +14,7 @@ import { DoctorContext } from './Context/DoctorContext';
 import DoctorDashboard from './Pages/Doctor/DoctorDashboard';
 import DoctorAppointment from './Pages/Doctor/DoctorAppointment';
 import DoctorProfile from './Pages/Doctor/DoctorProfile';
+import VideoCallAdmin from './Components/VideoCallAdmin';
 const App = () => {
   const {atoken}=useContext(AdminContext)
 const {dtoken}=useContext(DoctorContext)
@@ -29,10 +30,12 @@ const {dtoken}=useContext(DoctorContext)
   <Route path='/all-appointments' element={<AllAppointments/>}></Route>
   <Route path='/add-doctor' element={<AddDoctor/>}></Route>
   <Route path='/doctor-list' element={<DoctorsList/>}></Route>
+  <Route path="/admin/video-call/:appointmentId" element={<VideoCallAdmin />} />
   {/*Doctor Route*/}
   <Route path='/doctor-dashboard' element={<DoctorDashboard/>}></Route>
   <Route path='/doctor-appointments' element={<DoctorAppointment/>}></Route>
   <Route path='/doctor-profile' element={<DoctorProfile/>}></Route>
+  <Route path="/admin/video-call/abc" element={<VideoCallAdmin />} />
 </Routes>
       </div>
     </div>

@@ -12,9 +12,10 @@ import Contact from "./Pages/Contact";
 import Footer from "./Components/Footer/Footer";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import VideoCall from "./Components/VideoCall";
 const App = () => {
   return (
-    <div className="mx-4 sm:mx-[10%]">
+    <div className=" mx-4 sm:mx-[10%]">
       <ToastContainer></ToastContainer>
       <NavBar />
       <Routes>
@@ -28,10 +29,12 @@ const App = () => {
         <Route path="/my-profile" element={<MyProfile />} />
         <Route path="/my-appointments" element={<MyAppointments />} />
         <Route path="/appointment/:docId" element={<Appointment />} />
+        <Route path="/video-call/abc" element={<VideoCall />} />
       </Routes>
       <Footer />
     </div>
   );
 };
+
 
 export default App;
