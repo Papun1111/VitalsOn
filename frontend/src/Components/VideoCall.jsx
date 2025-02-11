@@ -1,27 +1,43 @@
-// src/components/VideoCall.jsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_SERVER_URL = "http://localhost:1111"; // Adjust if needed
-const ROOM_ID = "abc"; // Hard-coded room for demo
+const SOCKET_SERVER_URL = "http://localhost:1111"; // Match your server port
+const ROOM_ID = "abc"; // You can make this dynamic later
 
 export default function VideoCall() {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const socketRef = useRef(null);
+  const [connectionStatus, setConnectionStatus] = useState("Disconnected");
+  const [error, setError] = useState(null);
 
-  // Configure ICE servers (add TURN servers here if needed)
-  const iceServers = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+  // ICE servers configuration
+  const iceServers = {
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      { urls: "stun:stun1.l.google.com:19302" }
+    ],
+  };
 
   useEffect(() => {
-    // 1. Connect to the Socket.IO server
-    socketRef.current = io(SOCKET_SERVER_URL, { transports: ["websocket"] });
+    // Reset error state
+    setError(null);
+    setConnectionStatus("Connecting to server...");
 
-    // 2. Create the RTCPeerConnection
+    // 1. Connect to Socket.IO
+    try {
+      socketRef.current = io(SOCKET_SERVER_URL, { transports: ["websocket"] });
+      setConnectionStatus("Connected to server");
+    } catch (err) {
+      setError("Failed to connect to server");
+      return;
+    }
+
+    // 2. Create RTCPeerConnection
     peerConnectionRef.current = new RTCPeerConnection(iceServers);
 
-    // 3. When a local ICE candidate is generated, send it to the server
+    // 3. Handle ICE candidates
     peerConnectionRef.current.onicecandidate = (event) => {
       if (event.candidate) {
         socketRef.current.emit("ice-candidate", {
@@ -31,88 +47,107 @@ export default function VideoCall() {
       }
     };
 
-    // 4. When a remote track is received, display it in the remote video element
+    // 4. Handle incoming tracks
     peerConnectionRef.current.ontrack = (event) => {
-      console.log("User: Remote stream received:", event.streams[0]);
+      setConnectionStatus("Received remote stream");
       remoteVideoRef.current.srcObject = event.streams[0];
     };
 
-    // 5. Join the designated room
+    // 5. Join room
     socketRef.current.emit("join-room", ROOM_ID);
+    setConnectionStatus("Joined room: " + ROOM_ID);
 
-    // 6. Listen for an "answer" from the Admin (callee)
+    // 6. Handle answer from Admin
     socketRef.current.on("answer", async ({ answer }) => {
-      console.log("User: Received answer:", answer);
+      setConnectionStatus("Received answer");
       if (!peerConnectionRef.current) return;
       try {
-        await peerConnectionRef.current.setRemoteDescription(
-          new RTCSessionDescription(answer)
-        );
+        await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+        setConnectionStatus("Connected to peer");
       } catch (err) {
-        console.error("User: Error setting remote description:", err);
+        setError("Failed to set remote description: " + err.message);
       }
     });
 
-    // 7. Listen for ICE candidates from the Admin
+    // 7. Handle incoming ICE candidates
     socketRef.current.on("ice-candidate", async ({ candidate }) => {
-      console.log("User: Received ICE candidate:", candidate);
       if (!peerConnectionRef.current || !candidate) return;
       try {
-        await peerConnectionRef.current.addIceCandidate(
-          new RTCIceCandidate(candidate)
-        );
+        await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
       } catch (err) {
-        console.error("User: Error adding ICE candidate:", err);
+        setError("Failed to add ICE candidate: " + err.message);
       }
     });
 
-    // 8. Get local media (camera and microphone)
+    // 8. Get local media and create offer
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then(async (stream) => {
-        // Display the local stream
+        // Show local stream
         localVideoRef.current.srcObject = stream;
-        localVideoRef.current.muted = true; // Mute local video to avoid feedback
+        localVideoRef.current.muted = true;
+        setConnectionStatus("Got local media stream");
 
-        // Add all local tracks to the RTCPeerConnection
+        // Add tracks to RTCPeerConnection
         stream.getTracks().forEach((track) => {
           peerConnectionRef.current.addTrack(track, stream);
         });
 
-        // 9. Create an offer and send it immediately to the Admin
-        const offer = await peerConnectionRef.current.createOffer();
-        await peerConnectionRef.current.setLocalDescription(offer);
-        console.log("User: Sending offer to Admin...", offer);
-        socketRef.current.emit("offer", { roomId: ROOM_ID, offer });
+        // Create and send offer
+        try {
+          const offer = await peerConnectionRef.current.createOffer();
+          await peerConnectionRef.current.setLocalDescription(offer);
+          socketRef.current.emit("offer", { roomId: ROOM_ID, offer });
+          setConnectionStatus("Sent offer");
+        } catch (err) {
+          setError("Failed to create offer: " + err.message);
+        }
       })
       .catch((err) => {
-        console.error("User: getUserMedia error:", err);
+        setError("Failed to access camera/microphone: " + err.message);
       });
 
-    // Cleanup on component unmount
+    // Cleanup function
     return () => {
-      if (peerConnectionRef.current) peerConnectionRef.current.close();
-      if (socketRef.current) socketRef.current.disconnect();
+      if (localVideoRef.current?.srcObject) {
+        localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      }
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close();
+      }
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
   }, []);
 
   return (
-    <div>
-      <h2>User Video Call (Caller) – Room: {ROOM_ID}</h2>
-      <div style={{ display: "flex", gap: "1rem" }}>
-        <video
-          ref={localVideoRef}
-          style={{ width: "300px", backgroundColor: "black" }}
-          autoPlay
-          playsInline
-          muted
-        />
-        <video
-          ref={remoteVideoRef}
-          style={{ width: "300px", backgroundColor: "black" }}
-          autoPlay
-          playsInline
-        />
+    <div className="p-4">
+      <h2 className="text-xl mb-4">User Video Call (Caller) - Room: {ROOM_ID}</h2>
+      <div className="mb-4">
+        <p>Status: {connectionStatus}</p>
+        {error && <p className="text-red-500">Error: {error}</p>}
+      </div>
+      <div className="flex gap-4">
+        <div>
+          <h3 className="mb-2">Local Video</h3>
+          <video
+            ref={localVideoRef}
+            className="w-[300px] bg-black"
+            autoPlay
+            playsInline
+            muted
+          />
+        </div>
+        <div>
+          <h3 className="mb-2">Remote Video</h3>
+          <video
+            ref={remoteVideoRef}
+            className="w-[300px] bg-black"
+            autoPlay
+            playsInline
+          />
+        </div>
       </div>
     </div>
   );
