@@ -18,7 +18,7 @@ const Navbar = () => {
     return (
         <div className="bg-blue-600 p-4 flex justify-between items-center">
             <div>
-                <h1 className="text-white text-2xl font-bold">Medscription Admin</h1>
+                <h1 className="text-white text-2xl font-bold">VitalsOn Panel</h1>
                 <p className="text-white text-lg">{atoken ? "Admin":"Doctor"}</p>
             </div>   
             <button onClick={logout} className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-200 transition">

@@ -1,15 +1,20 @@
 // src/admin/VideoCallAdmin.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import { useParams } from "react-router-dom";
 
-const SOCKET_SERVER_URL = "http://localhost:1111"; // Match your server port
-const ROOM_ID = "abc"; // You can make this dynamic later
+const SOCKET_SERVER_URL = "https://medscriptionog.onrender.com";
 
 export default function VideoCallAdmin() {
+ 
+  const { roomId } = useParams();
+  const ROOM_ID = roomId || "abc";
+
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const socketRef = useRef(null);
+
   const [connectionStatus, setConnectionStatus] = useState("Disconnected");
   const [error, setError] = useState(null);
 
@@ -17,7 +22,7 @@ export default function VideoCallAdmin() {
   const iceServers = {
     iceServers: [
       { urls: "stun:stun.l.google.com:19302" },
-      { urls: "stun:stun1.l.google.com:19302" }
+      { urls: "stun:stun1.l.google.com:19302" },
     ],
   };
 
@@ -76,12 +81,14 @@ export default function VideoCallAdmin() {
         socketRef.current.on("offer", async ({ offer }) => {
           setConnectionStatus("Received offer");
           if (!peerConnectionRef.current) return;
-          
+
           try {
-            await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(offer));
+            await peerConnectionRef.current.setRemoteDescription(
+              new RTCSessionDescription(offer)
+            );
             const answer = await peerConnectionRef.current.createAnswer();
             await peerConnectionRef.current.setLocalDescription(answer);
-            
+
             socketRef.current.emit("answer", { roomId: ROOM_ID, answer });
             setConnectionStatus("Sent answer");
           } catch (err) {
@@ -93,12 +100,13 @@ export default function VideoCallAdmin() {
         socketRef.current.on("ice-candidate", async ({ candidate }) => {
           if (!peerConnectionRef.current || !candidate) return;
           try {
-            await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+            await peerConnectionRef.current.addIceCandidate(
+              new RTCIceCandidate(candidate)
+            );
           } catch (err) {
             setError("Failed to add ICE candidate: " + err.message);
           }
         });
-
       })
       .catch((err) => {
         setError("Failed to access camera/microphone: " + err.message);
@@ -107,7 +115,9 @@ export default function VideoCallAdmin() {
     // Cleanup function
     return () => {
       if (localVideoRef.current?.srcObject) {
-        localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        localVideoRef.current.srcObject.getTracks().forEach((track) =>
+          track.stop()
+        );
       }
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
@@ -116,11 +126,13 @@ export default function VideoCallAdmin() {
         socketRef.current.disconnect();
       }
     };
-  }, []);
+  }, [ROOM_ID]);
 
   return (
     <div className="p-4">
-      <h2 className="text-xl mb-4">Admin Video Call (Callee) - Room: {ROOM_ID}</h2>
+      <h2 className="text-xl mb-4">
+        Admin Video Call (Callee) - Room: {ROOM_ID}
+      </h2>
       <div className="mb-4">
         <p>Status: {connectionStatus}</p>
         {error && <p className="text-red-500">Error: {error}</p>}

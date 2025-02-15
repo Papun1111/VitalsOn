@@ -35,7 +35,7 @@ const {dtoken}=useContext(DoctorContext)
   <Route path='/doctor-dashboard' element={<DoctorDashboard/>}></Route>
   <Route path='/doctor-appointments' element={<DoctorAppointment/>}></Route>
   <Route path='/doctor-profile' element={<DoctorProfile/>}></Route>
-  <Route path="/admin/video-call/abc" element={<VideoCallAdmin />} />
+  <Route path="/video-call/:roomId" element={<VideoCallAdmin />} />
 </Routes>
       </div>
     </div>

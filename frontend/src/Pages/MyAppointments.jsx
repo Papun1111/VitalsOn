@@ -34,7 +34,11 @@ const MyAppointments = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "An unexpected error occurred."
+      );
     }
   };
 
@@ -54,7 +58,11 @@ const MyAppointments = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "An unexpected error occurred."
+      );
     }
   };
 
@@ -74,7 +82,11 @@ const MyAppointments = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "An unexpected error occurred."
+      );
     }
   };
 
@@ -85,6 +97,7 @@ const MyAppointments = () => {
     } else {
       toast.warn("Please log in to view your appointments.");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   // Handle payment success verification if your flow uses a success callback
@@ -109,27 +122,33 @@ const MyAppointments = () => {
         }
       } catch (error) {
         console.error(error);
-        toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
+        toast.error(
+          error.response?.data?.message ||
+            error.message ||
+            "An unexpected error occurred."
+        );
       }
     };
 
     if (sessionId) {
       verifyPayment();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
   return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-md">
+    <div className="p-4 md:p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">My Appointments</h2>
       <div className="space-y-4">
         {appointments.length > 0 ? (
           appointments.map((item) => (
             <div
               key={item._id}
-              className="flex p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-300 ease-in-out"
+              // Flex-col on small screens, row on md+ screens
+              className="flex flex-col md:flex-row p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-300 ease-in-out"
             >
               {/* Doctor's Photo */}
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-4">
                 <img
                   className="h-24 w-24 rounded-full object-cover"
                   src={item.doctorData?.image}
@@ -138,7 +157,7 @@ const MyAppointments = () => {
               </div>
 
               {/* Appointment Info */}
-              <div className="ml-4 flex-grow">
+              <div className="md:flex-grow">
                 <h3 className="text-lg font-bold">
                   {item.doctorData?.name || "Unknown Doctor"}
                 </h3>
@@ -149,38 +168,43 @@ const MyAppointments = () => {
                   {item.doctorData?.address?.line1 || "Address not provided"}
                 </p>
                 {item.doctorData?.address?.line2 && (
-                  <p className="text-gray-500">{item.doctorData.address.line2}</p>
+                  <p className="text-gray-500">
+                    {item.doctorData.address.line2}
+                  </p>
                 )}
                 <p className="text-gray-500">
                   <span className="font-semibold">Date &amp; Time:</span>{" "}
-                  {slotDateFormat(item.slotDate)} at {slotTimeFormat(item.slotTime)}
+                  {slotDateFormat(item.slotDate)} at{" "}
+                  {slotTimeFormat(item.slotTime)}
                 </p>
               </div>
 
-              {/* Buttons */}
-              <div className="ml-4 flex flex-col justify-between">
+              {/* Buttons Container */}
+              <div className="mt-4 md:mt-0 md:ml-4 flex flex-col justify-between items-start md:items-end">
                 {/* Pay Online */}
                 {!item.cancelled && !item.isCompleted && !item.payment && (
                   <button
                     onClick={() => appointRazorpay(item._id)}
-                    className="mt-2 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
+                    className="w-36 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
                   >
                     Pay Online
                   </button>
                 )}
+
                 {/* Cancel Appointment */}
                 {!item.cancelled && !item.isCompleted && (
                   <button
                     onClick={() => cancelAppointment(item._id)}
-                    className="mt-2 bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition duration-200"
+                    className="w-36 mt-2 bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition duration-200"
                   >
                     Cancel Appointment
                   </button>
                 )}
+
                 {/* Show status if cancelled or completed */}
                 {item.cancelled && (
                   <button
-                    className="sm:min-w-48 py-2 border-b-black rounded text-red-500"
+                    className="w-36 mt-2 py-2 px-4 rounded border border-red-500 text-red-500 cursor-not-allowed"
                     disabled
                   >
                     Appointment cancelled
@@ -188,19 +212,21 @@ const MyAppointments = () => {
                 )}
                 {item.isCompleted && (
                   <button
-                    className="sm:min-w-48 py-2 border-b-black rounded text-green-500"
+                    className="w-36 mt-2 py-2 px-4 rounded border border-green-500 text-green-500 cursor-not-allowed"
                     disabled
                   >
                     Appointment completed
                   </button>
                 )}
 
-                {/* Video Call Button => Hardcode "abc" */}
-                <Link to="/video-call/abc">
-                  <button className="mt-2 bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition duration-200">
-                    Join Video Call
-                  </button>
-                </Link>
+                {/* Video Call Button => Only show if not cancelled */}
+                {!item.cancelled && (
+                  <Link to={`/video-call/${item._id}`}>
+                    <button className="w-36 mt-2 bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition duration-200">
+                      Join Video Call
+                    </button>
+                  </Link>
+                )}
               </div>
             </div>
           ))

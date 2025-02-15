@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { AppContext } from "../../Context/AppContext";
-
+import vitals from "../../assets/vitals.svg"
 const NavBar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);

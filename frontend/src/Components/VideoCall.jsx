@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import { useParams } from "react-router-dom";
 
-const SOCKET_SERVER_URL = "http://localhost:1111"; // Match your server port
-const ROOM_ID = "abc"; // You can make this dynamic later
+const SOCKET_SERVER_URL = "https://medscriptionog.onrender.com"; // Match your server port
 
 export default function VideoCall() {
+  const { roomId } = useParams(); // Get roomId from URL
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
@@ -16,11 +17,14 @@ export default function VideoCall() {
   const iceServers = {
     iceServers: [
       { urls: "stun:stun.l.google.com:19302" },
-      { urls: "stun:stun1.l.google.com:19302" }
+      { urls: "stun:stun1.l.google.com:19302" },
     ],
   };
 
   useEffect(() => {
+    // If roomId doesn't exist, we can fall back to a default or handle error
+    const activeRoomId = roomId || "abc";
+
     // Reset error state
     setError(null);
     setConnectionStatus("Connecting to server...");
@@ -41,7 +45,7 @@ export default function VideoCall() {
     peerConnectionRef.current.onicecandidate = (event) => {
       if (event.candidate) {
         socketRef.current.emit("ice-candidate", {
-          roomId: ROOM_ID,
+          roomId: activeRoomId,
           candidate: event.candidate,
         });
       }
@@ -54,15 +58,17 @@ export default function VideoCall() {
     };
 
     // 5. Join room
-    socketRef.current.emit("join-room", ROOM_ID);
-    setConnectionStatus("Joined room: " + ROOM_ID);
+    socketRef.current.emit("join-room", activeRoomId);
+    setConnectionStatus("Joined room: " + activeRoomId);
 
     // 6. Handle answer from Admin
     socketRef.current.on("answer", async ({ answer }) => {
       setConnectionStatus("Received answer");
       if (!peerConnectionRef.current) return;
       try {
-        await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+        await peerConnectionRef.current.setRemoteDescription(
+          new RTCSessionDescription(answer)
+        );
         setConnectionStatus("Connected to peer");
       } catch (err) {
         setError("Failed to set remote description: " + err.message);
@@ -73,7 +79,9 @@ export default function VideoCall() {
     socketRef.current.on("ice-candidate", async ({ candidate }) => {
       if (!peerConnectionRef.current || !candidate) return;
       try {
-        await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+        await peerConnectionRef.current.addIceCandidate(
+          new RTCIceCandidate(candidate)
+        );
       } catch (err) {
         setError("Failed to add ICE candidate: " + err.message);
       }
@@ -97,7 +105,10 @@ export default function VideoCall() {
         try {
           const offer = await peerConnectionRef.current.createOffer();
           await peerConnectionRef.current.setLocalDescription(offer);
-          socketRef.current.emit("offer", { roomId: ROOM_ID, offer });
+          socketRef.current.emit("offer", {
+            roomId: activeRoomId,
+            offer,
+          });
           setConnectionStatus("Sent offer");
         } catch (err) {
           setError("Failed to create offer: " + err.message);
@@ -110,7 +121,9 @@ export default function VideoCall() {
     // Cleanup function
     return () => {
       if (localVideoRef.current?.srcObject) {
-        localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        localVideoRef.current.srcObject.getTracks().forEach((track) =>
+          track.stop()
+        );
       }
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
@@ -119,11 +132,13 @@ export default function VideoCall() {
         socketRef.current.disconnect();
       }
     };
-  }, []);
+  }, [roomId]);
 
   return (
     <div className="p-4">
-      <h2 className="text-xl mb-4">User Video Call (Caller) - Room: {ROOM_ID}</h2>
+      <h2 className="text-xl mb-4">
+        User Video Call (Caller) - Room: {roomId || "abc"}
+      </h2>
       <div className="mb-4">
         <p>Status: {connectionStatus}</p>
         {error && <p className="text-red-500">Error: {error}</p>}
