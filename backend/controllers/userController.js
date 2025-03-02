@@ -209,8 +209,8 @@ const paymentStripe = async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: `https://medscription.onrender.com/payment-success?session_id={CHECKOUT_SESSION_ID}&appointmentId=${appointmentId}`, // Redirect after successful payment
-      cancel_url: "https://medscription.onrender.com/", // Redirect if payment is cancelled
+      success_url: `https://vitalson.onrender.com/payment-success?session_id={CHECKOUT_SESSION_ID}&appointmentId=${appointmentId}`, // Redirect after successful payment
+      cancel_url: "https://vitalson.onrender.com/", // Redirect if payment is cancelled
     });
 
     res.json({ success: true, session });
