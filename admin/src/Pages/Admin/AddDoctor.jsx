@@ -21,38 +21,43 @@ const AddDoctor = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-        if (!docImg) {
-            return toast.error("Image not selected");
-        }
+      if (!docImg) {
+        return toast.error("Image not selected");
+      }
 
-        const formData = new FormData();
-        formData.append("image", docImg);
-        formData.append("name", name);
-        formData.append("email", email);
-        formData.append("password", password);
-        formData.append("speciality", speciality);
-        formData.append("degree", degree);
-        formData.append("experience", experience);
-        formData.append("fee", fee);
-        formData.append("about", about);
-        formData.append("address1", address1);
-        formData.append("address2", address2);
+      const formData = new FormData();
+      formData.append("image", docImg);
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("speciality", speciality);
+      formData.append("degree", degree);
+      formData.append("experience", experience);
+      formData.append("fee", fee);
+      formData.append("about", about);
+      formData.append("address1", address1);
+      formData.append("address2", address2);
 
-        const { data } = await axios.post(`${backendUrl}/api/admin/add-doctor`, formData, {
-            headers: {atoken}
-        });
+      const { data } = await axios.post(
+        `${backendUrl}/api/admin/add-doctor`,
+        formData,
+        { headers: { atoken } }
+      );
 
-        if (data.success) {
-            toast.success(data.message);
-            resetForm();
-        } else {
-            toast.error(data.message);
-        }
+      if (data.success) {
+        toast.success(data.message);
+        resetForm();
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-        console.error("Error adding doctor:", error.response ? error.response.data : error.message);
-        toast.error("An error occurred while adding the doctor.");
+      console.error(
+        "Error adding doctor:",
+        error.response ? error.response.data : error.message
+      );
+      toast.error("An error occurred while adding the doctor.");
     }
-};
+  };
 
   const resetForm = () => {
     setDocImg(null);
@@ -69,28 +74,52 @@ const AddDoctor = () => {
   };
 
   return (
-    <form onSubmit={onSubmitHandler} className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-3xl font-bold text-center mb-8 text-indigo-600">Add Doctor</h2>
+    <form
+      onSubmit={onSubmitHandler}
+      className="w-full  mx-auto px-4 py-6 bg-white rounded-lg shadow-lg"
+    >
+      <h2 className="text-3xl font-bold text-center mb-8 text-indigo-600">
+        Add Doctor
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Image Upload */}
         <div className="col-span-1 md:col-span-2">
-          <label htmlFor="doc-img" className="block w-full max-w-xs mx-auto cursor-pointer">
-            <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-indigo-500 transition-colors">
+          <label
+            htmlFor="doc-img"
+            className="block w-full mx-auto cursor-pointer"
+          >
+            <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-indigo-500 transition-colors">
               <div className="text-center">
                 <img
-                  src={docImg ? URL.createObjectURL(docImg) : assets.upload_area}
+                  src={
+                    docImg ? URL.createObjectURL(docImg) : assets.upload_area
+                  }
                   alt="Upload"
                   className="w-24 h-24 mx-auto mb-2"
                 />
-                <p className="text-sm text-gray-500">Upload doctor picture</p>
+                <p className="text-sm text-gray-500">
+                  Upload doctor picture
+                </p>
               </div>
             </div>
           </label>
-          <input onChange={(e) => setDocImg(e.target.files[0])} type="file" id="doc-img" hidden />
+          <input
+            onChange={(e) => setDocImg(e.target.files[0])}
+            type="file"
+            id="doc-img"
+            hidden
+          />
         </div>
 
+        {/* Left Column Inputs */}
         <div className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Your Name</label>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Your Name
+            </label>
             <input
               value={name}
               type="text"
@@ -98,12 +127,17 @@ const AddDoctor = () => {
               name="name"
               required
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Enter your name"
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Your Email</label>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Your Email
+            </label>
             <input
               value={email}
               type="email"
@@ -111,12 +145,17 @@ const AddDoctor = () => {
               name="email"
               required
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Enter your email"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Doctor Password</label>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Doctor Password
+            </label>
             <input
               value={password}
               type="password"
@@ -124,47 +163,65 @@ const AddDoctor = () => {
               name="password"
               required
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Enter your password"
             />
           </div>
           <div>
-            <label htmlFor="experience" className="block text-sm font-medium text-gray-700">Experience</label>
+            <label
+              htmlFor="experience"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Experience
+            </label>
             <select
               value={experience}
               onChange={(e) => setExperience(e.target.value)}
               name="experience"
               id="experience"
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               {[...Array(10)].map((_, i) => (
-                <option key={i} value={`${i + 1} Year`}>{`${i + 1} Year`}</option>
+                <option key={i} value={`${i + 1} Year`}>
+                  {`${i + 1} Year`}
+                </option>
               ))}
             </select>
           </div>
           <div>
-            <label htmlFor="fee" className="block text-sm font-medium text-gray-700">Fee</label>
+            <label
+              htmlFor="fee"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Fee
+            </label>
             <input
               value={fee}
               type="number"
               id="fee"
               name="fee"
               onChange={(e) => setFee(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Fee"
             />
           </div>
         </div>
 
+        {/* Right Column Inputs */}
         <div className="space-y-4">
           <div>
-            <label htmlFor="speciality" className="block text-sm font-medium text-gray-700">Speciality</label>
+            <label
+              htmlFor="speciality"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Speciality
+            </label>
             <select
               value={speciality}
               onChange={(e) => setSpeciality(e.target.value)}
               name="speciality"
               id="speciality"
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="General physician">General physician</option>
               <option value="Gynecologist">Gynecologist</option>
@@ -175,19 +232,29 @@ const AddDoctor = () => {
             </select>
           </div>
           <div>
-            <label htmlFor="education" className="block text-sm font-medium text-gray-700">Education</label>
+            <label
+              htmlFor="education"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Education
+            </label>
             <input
               value={degree}
               type="text"
               id="education"
               name="education"
               onChange={(e) => setDegree(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Education"
             />
           </div>
           <div>
-            <label htmlFor="address1" className="block text-sm font-medium text-gray-700">Address</label>
+            <label
+              htmlFor="address1"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Address
+            </label>
             <input
               value={address1}
               type="text"
@@ -195,7 +262,7 @@ const AddDoctor = () => {
               name="address1"
               required
               onChange={(e) => setAddress1(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Address 1"
             />
           </div>
@@ -206,29 +273,37 @@ const AddDoctor = () => {
               id="address2"
               name="address2"
               onChange={(e) => setAddress2(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Address 2"
             />
           </div>
         </div>
 
+        {/* About Doctor Textarea */}
         <div className="col-span-1 md:col-span-2">
-          <label htmlFor="about" className="block text-sm font-medium text-gray-700">About Doctor</label>
+          <label
+            htmlFor="about"
+            className="block text-sm font-medium text-gray-700"
+          >
+            About Doctor
+          </label>
           <textarea
             value={about}
             onChange={(e) => setAbout(e.target.value)}
             name="about"
             id="about"
             rows={5}
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
             placeholder="Write about doctor"
           />
         </div>
       </div>
+
+      {/* Submit Button */}
       <div className="mt-8 text-center">
         <button
           type="submit"
-          className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200"
+          className="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-medium rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"
         >
           Add Doctor
         </button>

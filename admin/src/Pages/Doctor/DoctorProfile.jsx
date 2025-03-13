@@ -1,14 +1,13 @@
 import React, { useEffect, useContext, useState } from "react";
 import { DoctorContext } from "../../Context/DoctorContext";
-import { AppContext } from "../../Context/AppContext";
-import axios from "axios";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const DoctorProfile = () => {
   const { dtoken, profileData, getProfileData, setProfileData, backendUrl } =
     useContext(DoctorContext);
-
   const [isEdit, setIsEdit] = useState(false);
+
   const updateProfile = async () => {
     try {
       const updateData = {
@@ -17,7 +16,7 @@ const DoctorProfile = () => {
         available: profileData.available,
       };
       const { data } = await axios.post(
-        backendUrl + "/api/doctor/update-profile",
+        `${backendUrl}/api/doctor/update-profile`,
         updateData,
         { headers: { dtoken } }
       );
@@ -32,123 +31,128 @@ const DoctorProfile = () => {
       toast.error(error.message);
     }
   };
+
   useEffect(() => {
-    getProfileData();
+    if (dtoken) {
+      getProfileData();
+    }
   }, [dtoken]);
 
-  return (
-    profileData && (
-      <div className="w-full max-w-6xl mx-auto p-4 bg-white rounded-lg shadow-md">
-        <div className="flex items-center">
-          <img
-            src={profileData.image}
-            alt=""
-            className="w-24 h-24 rounded-full border-2 border-gray-200"
-          />
-          <div className="ml-4">
-            <p className="text-xl font-bold">{profileData.name}</p>
-            <div className="flex items-center space-x-2">
-              <p className="text-sm text-gray-600">
-                {profileData.degree} - {profileData.speciality}
-              </p>
-              <button className="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
-                {profileData.experience} years
-              </button>
-            </div>
-            <div className="mt-2">
-              <p className="font-semibold">About:</p>
-              <p className="text-gray-700">{profileData.about}</p>
-            </div>
-            <p className="mt-2">
-              Appointment Fee:{" "}
-              <span className="font-bold">
-                $
-                {isEdit ? (
-                  <input
-                    onChange={(e) =>
-                      setProfileData((prev) => ({
-                        ...prev,
-                        fee: e.target.value,
-                      }))
-                    }
-                    value={profileData.fee}
-                    type="number"
-                  ></input>
-                ) : (
-                  profileData.fee
-                )}
-              </span>
-            </p>
-            <div className="mt-2">
-              <p className="font-semibold">Address:</p>
-              <p>
-                {isEdit ? (
-                  <input
-                    type="text"
-                    value={profileData.address.line1}
-                    onChange={(e) =>
-                      setProfileData((prev) => ({
-                        ...prev,
-                        address: { ...prev.address, line1: e.target.value },
-                      }))
-                    }
-                  ></input>
-                ) : (
-                  profileData.address.line1
-                )}
-              </p>
-              <p>
-                {isEdit ? (
-                  <input
-                    type="text"
-                    value={profileData.address.line2}
-                    onChange={(e) =>
-                      setProfileData((prev) => ({
-                        ...prev,
-                        address: { ...prev.address, line2: e.target.value },
-                      }))
-                    }
-                  ></input>
-                ) : (
-                  profileData.address.line2
-                )}
-              </p>
-            </div>
-            <div className="mt-4 flex items-center">
-              <input
-                onChange={(e) =>
-                  isEdit &&
-                  setProfileData((prev) => ({
-                    ...prev,
-                    available: !prev.available,
-                  }))
-                }
-                checked={profileData.available}
-                type="checkbox"
-                className="mr-2"
-              />
-              <label className="text-gray-700">Available</label>
-            </div>
+  if (!profileData) return null;
 
+  return (
+    <div className="w-full max-w-4xl mx-auto p-6 bg-gradient-to-r from-blue-50 to-white rounded-lg shadow-2xl">
+      <div className="flex flex-col sm:flex-row items-center">
+        <img
+          src={profileData.image}
+          alt="Doctor Profile"
+          className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white shadow-lg"
+        />
+        <div className="mt-4 sm:mt-0 sm:ml-6 flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            {profileData.name}
+          </h1>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center mt-2 space-y-1 sm:space-y-0 sm:space-x-4">
+            <p className="text-md text-gray-600">
+              {profileData.degree} - {profileData.speciality}
+            </p>
+            <div className="px-3 py-1 bg-blue-500 text-white text-sm rounded-full">
+              {profileData.experience} years
+            </div>
+          </div>
+          <div className="mt-4">
+            <p className="font-semibold text-gray-700">About:</p>
+            <p className="text-gray-600">{profileData.about}</p>
+          </div>
+          <div className="mt-4 flex flex-col sm:flex-row items-center">
+            <p className="text-gray-700 font-semibold mr-2">
+              Appointment Fee:
+            </p>
+            {isEdit ? (
+              <input
+                type="number"
+                value={profileData.fee}
+                onChange={(e) =>
+                  setProfileData((prev) => ({ ...prev, fee: e.target.value }))
+                }
+                className="px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            ) : (
+              <span className="text-lg font-bold text-gray-800">
+                ${profileData.fee}
+              </span>
+            )}
+          </div>
+          <div className="mt-4">
+            <p className="font-semibold text-gray-700">Address:</p>
+            {isEdit ? (
+              <div className="flex flex-col">
+                <input
+                  type="text"
+                  value={profileData.address.line1}
+                  onChange={(e) =>
+                    setProfileData((prev) => ({
+                      ...prev,
+                      address: { ...prev.address, line1: e.target.value },
+                    }))
+                  }
+                  placeholder="Line 1"
+                  className="px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2"
+                />
+                <input
+                  type="text"
+                  value={profileData.address.line2}
+                  onChange={(e) =>
+                    setProfileData((prev) => ({
+                      ...prev,
+                      address: { ...prev.address, line2: e.target.value },
+                    }))
+                  }
+                  placeholder="Line 2"
+                  className="px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+            ) : (
+              <div>
+                <p className="text-gray-600">{profileData.address.line1}</p>
+                <p className="text-gray-600">{profileData.address.line2}</p>
+              </div>
+            )}
+          </div>
+          <div className="mt-4 flex items-center">
+            <input
+              type="checkbox"
+              checked={profileData.available}
+              onChange={() =>
+                setProfileData((prev) => ({
+                  ...prev,
+                  available: !prev.available,
+                }))
+              }
+              className="mr-2 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label className="text-gray-700 font-medium">Available</label>
+          </div>
+          <div className="mt-6">
             {isEdit ? (
               <button
                 onClick={updateProfile}
-                className="mt-4 px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+                className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
               >
                 Save
               </button>
             ) : (
               <button
                 onClick={() => setIsEdit(true)}
-                className="mt-4 px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
               >
-                Edit
+                Edit Profile
               </button>
             )}
           </div>
         </div>
       </div>
-    )
+    </div>
   );
 };
 
