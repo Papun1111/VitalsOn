@@ -15,6 +15,8 @@ import DoctorDashboard from './Pages/Doctor/DoctorDashboard';
 import DoctorAppointment from './Pages/Doctor/DoctorAppointment';
 import DoctorProfile from './Pages/Doctor/DoctorProfile';
 import VideoCallAdmin from './Components/VideoCallAdmin';
+import AdminLandingPage from './Pages/Admin/AdminLanding';
+import DoctorLandingPage from './Pages/Doctor/DoctorLandingPage';
 const App = () => {
   const {atoken}=useContext(AdminContext)
 const {dtoken}=useContext(DoctorContext)
@@ -23,9 +25,10 @@ const {dtoken}=useContext(DoctorContext)
       <ToastContainer></ToastContainer>
       <Navbar></Navbar>
       <div className='flex items-start'>
-<Sidebar></Sidebar>
+{/* {atoken &&<Sidebar></Sidebar>} */}
 <Routes>
-  <Route path='/' element={<></>}></Route>
+  {atoken &&<Route path='/' element={<AdminLandingPage/>}></Route>}
+  {dtoken &&<Route path='/' element={<DoctorLandingPage/>}></Route>}
   <Route path='/admin-dashboard' element={<Dashboard></Dashboard>}></Route>
   <Route path='/all-appointments' element={<AllAppointments/>}></Route>
   <Route path='/add-doctor' element={<AddDoctor/>}></Route>

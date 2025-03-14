@@ -1,8 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AdminContext } from '../Context/AdminContext';
 import { NavLink } from 'react-router-dom';
-import assets from "../assets/assets";
 import { DoctorContext } from '../Context/DoctorContext';
+import { AiFillHome } from 'react-icons/ai';
+import { FaCalendarAlt, FaUserPlus, FaUsers, FaUserCircle } from 'react-icons/fa';
 
 const Sidebar = () => {
   const { atoken } = useContext(AdminContext);
@@ -28,7 +29,7 @@ const Sidebar = () => {
   return (
     <div
       className={`
-        bg-gray-800 text-white h-screen w-64 shadow-lg fixed top-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
+        bg-gray-800 text-white h-full w-64 shadow-lg fixed top-0 left-0 z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         sm:relative sm:translate-x-0
       `}
@@ -57,11 +58,7 @@ const Sidebar = () => {
               className="flex items-center p-2 hover:bg-gray-700 rounded-lg transition"
               onClick={closeSidebar}
             >
-              <img 
-                src={assets.home_icon} 
-                alt="Dashboard" 
-                className="w-6 h-6 md:w-8 md:h-8 mr-2" 
-              />
+              <AiFillHome className="text-white text-2xl mr-2" />
               <p className="font-semibold text-sm md:text-base">Dashboard</p>
             </NavLink>
           </li>
@@ -71,11 +68,7 @@ const Sidebar = () => {
               className="flex items-center p-2 hover:bg-gray-700 rounded-lg transition"
               onClick={closeSidebar}
             >
-              <img 
-                src={assets.appointment_icon} 
-                alt="Appointments" 
-                className="w-6 h-6 md:w-8 md:h-8 mr-2" 
-              />
+              <FaCalendarAlt className="text-white text-2xl mr-2" />
               <p className="font-semibold text-sm md:text-base">Appointments</p>
             </NavLink>
           </li>
@@ -85,11 +78,7 @@ const Sidebar = () => {
               className="flex items-center p-2 hover:bg-gray-700 rounded-lg transition"
               onClick={closeSidebar}
             >
-              <img 
-                src={assets.add_icon} 
-                alt="Add Doctor" 
-                className="w-6 h-6 md:w-8 md:h-8 mr-2" 
-              />
+              <FaUserPlus className="text-white text-2xl mr-2" />
               <p className="font-semibold text-sm md:text-base">Add Doctor</p>
             </NavLink>
           </li>
@@ -99,11 +88,7 @@ const Sidebar = () => {
               className="flex items-center p-2 hover:bg-gray-700 rounded-lg transition"
               onClick={closeSidebar}
             >
-              <img 
-                src={assets.people_icon} 
-                alt="Doctors List" 
-                className="w-6 h-6 md:w-8 md:h-8 mr-2" 
-              />
+              <FaUsers className="text-white text-2xl mr-2" />
               <p className="font-semibold text-sm md:text-base">Doctors List</p>
             </NavLink>
           </li>
@@ -117,11 +102,7 @@ const Sidebar = () => {
               className="flex items-center p-2 hover:bg-gray-700 rounded-lg transition"
               onClick={closeSidebar}
             >
-              <img 
-                src={assets.home_icon} 
-                alt="Dashboard" 
-                className="w-6 h-6 md:w-8 md:h-8 mr-2" 
-              />
+              <AiFillHome className="text-white text-2xl mr-2" />
               <p className="font-semibold text-sm md:text-base">Dashboard</p>
             </NavLink>
           </li>
@@ -131,11 +112,7 @@ const Sidebar = () => {
               className="flex items-center p-2 hover:bg-gray-700 rounded-lg transition"
               onClick={closeSidebar}
             >
-              <img 
-                src={assets.appointment_icon} 
-                alt="Appointments" 
-                className="w-6 h-6 md:w-8 md:h-8 mr-2" 
-              />
+              <FaCalendarAlt className="text-white text-2xl mr-2" />
               <p className="font-semibold text-sm md:text-base">Appointments</p>
             </NavLink>
           </li>
@@ -145,11 +122,7 @@ const Sidebar = () => {
               className="flex items-center p-2 hover:bg-gray-700 rounded-lg transition"
               onClick={closeSidebar}
             >
-              <img 
-                src={assets.people_icon} 
-                alt="Profile" 
-                className="w-6 h-6 md:w-8 md:h-8 mr-2" 
-              />
+              <FaUserCircle className="text-white text-2xl mr-2" />
               <p className="font-semibold text-sm md:text-base">Profile</p>
             </NavLink>
           </li>
