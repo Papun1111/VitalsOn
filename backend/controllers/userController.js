@@ -203,14 +203,14 @@ const paymentStripe = async (req, res) => {
             product_data: {
               name: `Appointment #${appointmentId}`, // Customize as needed
             },
-            unit_amount: appointmentData.amount * 153, // Amount in cents
+            unit_amount: appointmentData.amount * 153, 
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: `https://vitalson.onrender.com/payment-success?session_id={CHECKOUT_SESSION_ID}&appointmentId=${appointmentId}`, // Redirect after successful payment
-      cancel_url: "https://vitalson.onrender.com/", // Redirect if payment is cancelled
+      success_url: `https://vitalson.onrender.com/video-call/${appointmentId}`,
+      cancel_url: "https://vitalson.onrender.com/", 
     });
 
     res.json({ success: true, session });
