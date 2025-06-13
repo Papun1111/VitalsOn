@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import assets from "../../assets/assets";
 import { AdminContext } from "../../Context/AdminContext";
 import { toast } from "react-toastify";
@@ -16,13 +17,18 @@ const AddDoctor = () => {
   const [degree, setDegree] = useState("");
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { backendUrl, atoken } = useContext(AdminContext);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     try {
       if (!docImg) {
-        return toast.error("Image not selected");
+        toast.error("Image not selected");
+        setIsSubmitting(false);
+        return;
       }
 
       const formData = new FormData();
@@ -56,6 +62,8 @@ const AddDoctor = () => {
         error.response ? error.response.data : error.message
       );
       toast.error("An error occurred while adding the doctor.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -73,242 +81,396 @@ const AddDoctor = () => {
     setAddress2("");
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: -30, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 15,
+        duration: 0.6
+      }
+    }
+  };
+
+  const imageUploadVariants = {
+    hidden: { opacity: 0, scale: 0.8, rotateY: -90 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      rotateY: 0,
+      transition: {
+        type: "spring",
+        stiffness: 120,
+        damping: 15,
+        duration: 0.8
+      }
+    },
+    hover: {
+      scale: 1.05,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    }
+  };
+
+  const inputVariants = {
+    hidden: { opacity: 0, x: -30, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 120,
+        damping: 15
+      }
+    },
+    focus: {
+      scale: 1.02,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    }
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 15,
+        delay: 0.5
+      }
+    },
+    hover: {
+      scale: 1.05,
+      y: -2,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    },
+    tap: {
+      scale: 0.95,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    }
+  };
+
+  const loadingVariants = {
+    animate: {
+      rotate: 360,
+      transition: {
+        duration: 1,
+        repeat: Infinity,
+        ease: "linear"
+      }
+    }
+  };
+
   return (
-    <form
+    <motion.form
       onSubmit={onSubmitHandler}
-      className="w-full  mx-auto px-4 py-6 bg-white rounded-lg shadow-lg"
+      className="w-full mx-auto px-6 py-8 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-gray-700"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
-      <h2 className="text-3xl font-bold text-center mb-8 text-indigo-600">
+      <motion.h2 
+        className="text-4xl font-bold text-center mb-10 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"
+        variants={titleVariants}
+      >
         Add Doctor
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      </motion.h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Image Upload */}
-        <div className="col-span-1 md:col-span-2">
-          <label
+        <motion.div 
+          className="col-span-1 md:col-span-2"
+          variants={inputVariants}
+        >
+          <motion.label
             htmlFor="doc-img"
-            className="block w-full mx-auto cursor-pointer"
+            className="block w-full max-w-xs mx-auto cursor-pointer"
+            variants={imageUploadVariants}
+            whileHover="hover"
           >
-            <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-indigo-500 transition-colors">
+            <motion.div 
+              className="relative border-2 border-dashed border-gray-600 rounded-xl p-8 hover:border-blue-500 transition-all duration-300 bg-gradient-to-br from-gray-800 to-gray-700"
+              whileHover={{
+                borderColor: "#3B82F6",
+                boxShadow: "0 0 20px rgba(59, 130, 246, 0.3)"
+              }}
+            >
               <div className="text-center">
-                <img
+                <motion.img
                   src={
                     docImg ? URL.createObjectURL(docImg) : assets.upload_area
                   }
                   alt="Upload"
-                  className="w-24 h-24 mx-auto mb-2"
+                  className="w-28 h-28 mx-auto mb-4 rounded-full object-cover border-4 border-gray-600"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 />
-                <p className="text-sm text-gray-500">
+                <motion.p 
+                  className="text-sm text-gray-300 font-medium"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
                   Upload doctor picture
-                </p>
+                </motion.p>
               </div>
-            </div>
-          </label>
+            </motion.div>
+          </motion.label>
           <input
             onChange={(e) => setDocImg(e.target.files[0])}
             type="file"
             id="doc-img"
             hidden
+            accept="image/*"
           />
-        </div>
+        </motion.div>
 
         {/* Left Column Inputs */}
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Your Name
-            </label>
-            <input
-              value={name}
-              type="text"
-              id="name"
-              name="name"
-              required
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter your name"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Your Email
-            </label>
-            <input
-              value={email}
-              type="email"
-              id="email"
-              name="email"
-              required
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter your email"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Doctor Password
-            </label>
-            <input
-              value={password}
-              type="password"
-              id="password"
-              name="password"
-              required
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter your password"
-            />
-          </div>
-          <div>
-            <label
+        <motion.div 
+          className="space-y-6"
+          variants={containerVariants}
+        >
+          {[
+            { label: "Your Name", value: name, setter: setName, type: "text", placeholder: "Enter your name", id: "name" },
+            { label: "Your Email", value: email, setter: setEmail, type: "email", placeholder: "Enter your email", id: "email" },
+            { label: "Doctor Password", value: password, setter: setPassword, type: "password", placeholder: "Enter your password", id: "password" },
+            { label: "Fee", value: fee, setter: setFee, type: "number", placeholder: "Fee", id: "fee" }
+          ].map((field, index) => (
+            <motion.div key={field.id} variants={inputVariants}>
+              <motion.label
+                htmlFor={field.id}
+                className="block text-sm font-semibold text-gray-200 mb-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                {field.label}
+              </motion.label>
+              <motion.input
+                value={field.value}
+                type={field.type}
+                id={field.id}
+                name={field.id}
+                required={field.id !== "fee"}
+                onChange={(e) => field.setter(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder={field.placeholder}
+                variants={inputVariants}
+                whileFocus="focus"
+              />
+            </motion.div>
+          ))}
+
+          <motion.div variants={inputVariants}>
+            <motion.label
               htmlFor="experience"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-semibold text-gray-200 mb-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
             >
               Experience
-            </label>
-            <select
+            </motion.label>
+            <motion.select
               value={experience}
               onChange={(e) => setExperience(e.target.value)}
               name="experience"
               id="experience"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              variants={inputVariants}
+              whileFocus="focus"
             >
               {[...Array(10)].map((_, i) => (
-                <option key={i} value={`${i + 1} Year`}>
+                <option key={i} value={`${i + 1} Year`} className="bg-gray-700">
                   {`${i + 1} Year`}
                 </option>
               ))}
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor="fee"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Fee
-            </label>
-            <input
-              value={fee}
-              type="number"
-              id="fee"
-              name="fee"
-              onChange={(e) => setFee(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Fee"
-            />
-          </div>
-        </div>
+            </motion.select>
+          </motion.div>
+        </motion.div>
 
         {/* Right Column Inputs */}
-        <div className="space-y-4">
-          <div>
-            <label
+        <motion.div 
+          className="space-y-6"
+          variants={containerVariants}
+        >
+          <motion.div variants={inputVariants}>
+            <motion.label
               htmlFor="speciality"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-semibold text-gray-200 mb-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
             >
               Speciality
-            </label>
-            <select
+            </motion.label>
+            <motion.select
               value={speciality}
               onChange={(e) => setSpeciality(e.target.value)}
               name="speciality"
               id="speciality"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+              variants={inputVariants}
+              whileFocus="focus"
             >
-              <option value="General physician">General physician</option>
-              <option value="Gynecologist">Gynecologist</option>
-              <option value="Dermatologist">Dermatologist</option>
-              <option value="Pediatricians">Pediatricians</option>
-              <option value="Neurologist">Neurologist</option>
-              <option value="Gastroenterologist">Gastroenterologist</option>
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor="education"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Education
-            </label>
-            <input
-              value={degree}
-              type="text"
-              id="education"
-              name="education"
-              onChange={(e) => setDegree(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Education"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="address1"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Address
-            </label>
-            <input
-              value={address1}
-              type="text"
-              id="address1"
-              name="address1"
-              required
-              onChange={(e) => setAddress1(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Address 1"
-            />
-          </div>
-          <div>
-            <input
-              value={address2}
-              type="text"
-              id="address2"
-              name="address2"
-              onChange={(e) => setAddress2(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Address 2"
-            />
-          </div>
-        </div>
+              {[
+                "General physician",
+                "Gynecologist", 
+                "Dermatologist",
+                "Pediatricians",
+                "Neurologist",
+                "Gastroenterologist"
+              ].map((spec) => (
+                <option key={spec} value={spec} className="bg-gray-700">
+                  {spec}
+                </option>
+              ))}
+            </motion.select>
+          </motion.div>
+
+          {[
+            { label: "Education", value: degree, setter: setDegree, placeholder: "Education", id: "education" },
+            { label: "Address", value: address1, setter: setAddress1, placeholder: "Address 1", id: "address1", required: true },
+            { label: "", value: address2, setter: setAddress2, placeholder: "Address 2", id: "address2" }
+          ].map((field, index) => (
+            <motion.div key={field.id} variants={inputVariants}>
+              {field.label && (
+                <motion.label
+                  htmlFor={field.id}
+                  className="block text-sm font-semibold text-gray-200 mb-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: (index + 1) * 0.1 }}
+                >
+                  {field.label}
+                </motion.label>
+              )}
+              <motion.input
+                value={field.value}
+                type="text"
+                id={field.id}
+                name={field.id}
+                required={field.required}
+                onChange={(e) => field.setter(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                placeholder={field.placeholder}
+                variants={inputVariants}
+                whileFocus="focus"
+              />
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* About Doctor Textarea */}
-        <div className="col-span-1 md:col-span-2">
-          <label
+        <motion.div 
+          className="col-span-1 md:col-span-2"
+          variants={inputVariants}
+        >
+          <motion.label
             htmlFor="about"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-semibold text-gray-200 mb-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
           >
             About Doctor
-          </label>
-          <textarea
+          </motion.label>
+          <motion.textarea
             value={about}
             onChange={(e) => setAbout(e.target.value)}
             name="about"
             id="about"
             rows={5}
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-300"
             placeholder="Write about doctor"
+            variants={inputVariants}
+            whileFocus="focus"
           />
-        </div>
+        </motion.div>
       </div>
 
       {/* Submit Button */}
-      <div className="mt-8 text-center">
-        <button
+      <motion.div 
+        className="mt-10 text-center"
+        variants={buttonVariants}
+      >
+        <motion.button
           type="submit"
-          className="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-medium rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"
+          disabled={isSubmitting}
+          className="relative w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          variants={buttonVariants}
+          whileHover="hover"
+          whileTap="tap"
         >
-          Add Doctor
-        </button>
-      </div>
-    </form>
+          <AnimatePresence mode="wait">
+            {isSubmitting ? (
+              <motion.div
+                key="loading"
+                className="flex items-center justify-center space-x-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <motion.div
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                  variants={loadingVariants}
+                  animate="animate"
+                />
+                <span>Adding Doctor...</span>
+              </motion.div>
+            ) : (
+              <motion.span
+                key="text"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                Add Doctor
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.button>
+      </motion.div>
+    </motion.form>
   );
 };
 
