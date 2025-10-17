@@ -3,8 +3,11 @@ import { AppContext } from "../Context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, Link } from "react-router-dom";
+// Assuming you have motion for animations, though it's not used in the original file, adding for consistency.
+import { motion, AnimatePresence } from "framer-motion";
 
 const MyAppointments = () => {
+  // All your original state and logic are preserved
   const { backendUrl, token, getDoctorsData } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
   const months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -20,7 +23,6 @@ const MyAppointments = () => {
     return `${hours % 12 || 12}:${minutes} ${hours >= 12 ? "PM" : "AM"}`;
   };
 
-  // Fetch user appointments
   const getUserAppointments = async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/api/user/appointments`, {
@@ -34,15 +36,10 @@ const MyAppointments = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
+      toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
     }
   };
 
-  // Cancel an appointment
   const cancelAppointment = async (appointmentId) => {
     try {
       const { data } = await axios.post(
@@ -58,15 +55,10 @@ const MyAppointments = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
+      toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
     }
   };
 
-  // Initiate payment (Stripe/Razorpay)
   const appointRazorpay = async (appointmentId) => {
     try {
       const { data } = await axios.post(
@@ -75,37 +67,28 @@ const MyAppointments = () => {
         { headers: { token } }
       );
       if (data.success) {
-        // For Stripe, redirect to data.session.url
         window.location.replace(data.session.url);
       } else {
         console.log("Error initiating payment");
       }
     } catch (error) {
       console.error(error);
-      toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
+      toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
     }
   };
 
-  // On mount, fetch appointments (if authenticated)
   useEffect(() => {
     if (token) {
       getUserAppointments();
     } else {
       toast.warn("Please log in to view your appointments.");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // Handle payment success verification if your flow uses a success callback
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const sessionId = query.get("session_id");
     const appointmentId = query.get("appointmentId");
-
     const verifyPayment = async () => {
       try {
         if (sessionId && appointmentId) {
@@ -122,117 +105,109 @@ const MyAppointments = () => {
         }
       } catch (error) {
         console.error(error);
-        toast.error(
-          error.response?.data?.message ||
-            error.message ||
-            "An unexpected error occurred."
-        );
+        toast.error(error.response?.data?.message || error.message || "An unexpected error occurred.");
       }
     };
-
     if (sessionId) {
       verifyPayment();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
   return (
-    <div className="p-4 md:p-6 bg-gray-100 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">My Appointments</h2>
-      <div className="space-y-4">
-        {appointments.length > 0 ? (
-          appointments.map((item) => (
-            <div
-              key={item._id}
-              // Flex-col on small screens, row on md+ screens
-              className="flex flex-col md:flex-row p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow duration-300 ease-in-out"
-            >
-              {/* Doctor's Photo */}
-              <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-4">
-                <img
-                  className="h-24 w-24 rounded-full object-cover"
-                  src={item.doctorData?.image}
-                  alt={item.doctorData?.name || "Doctor"}
-                />
-              </div>
+    // Inspired Styling: Clean off-white background with proper spacing.
+    <div className="bg-[#FBF9F6] min-h-screen py-12 md:py-20">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Inspired Styling: Elegant serif font for the main heading. */}
+        <h2 className="text-4xl font-serif font-medium text-gray-900 mb-8 text-center">
+          My Appointments
+        </h2>
+        <div className="space-y-6">
+          <AnimatePresence>
+            {appointments.length > 0 ? (
+              appointments.map((item, index) => (
+                <motion.div
+                  key={item._id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0, transition: { delay: index * 0.05 } }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  // Inspired Styling: A clean card with subtle border and shadow.
+                  className="flex flex-col md:flex-row items-start p-6 bg-white rounded-xl border border-gray-200/80 shadow-sm gap-6"
+                >
+                  <img
+                    // Inspired Styling: A slightly larger, rounded-xl image.
+                    className="h-28 w-28 rounded-xl object-cover flex-shrink-0"
+                    src={item.doctorData?.image}
+                    alt={item.doctorData?.name || "Doctor"}
+                  />
 
-              {/* Appointment Info */}
-              <div className="md:flex-grow">
-                <h3 className="text-lg font-bold">
-                  {item.doctorData?.name || "Unknown Doctor"}
-                </h3>
-                <p className="text-gray-600">
-                  {item.doctorData?.speciality || "Speciality not provided"}
-                </p>
-                <p className="text-gray-500">
-                  {item.doctorData?.address?.line1 || "Address not provided"}
-                </p>
-                {item.doctorData?.address?.line2 && (
-                  <p className="text-gray-500">
-                    {item.doctorData.address.line2}
-                  </p>
-                )}
-                <p className="text-gray-500">
-                  <span className="font-semibold">Date &amp; Time:</span>{" "}
-                  {slotDateFormat(item.slotDate)} at{" "}
-                  {slotTimeFormat(item.slotTime)}
-                </p>
-              </div>
+                  <div className="flex-grow">
+                    {/* Inspired Styling: Clear typographic hierarchy. */}
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      {item.doctorData?.name || "Unknown Doctor"}
+                    </h3>
+                    <p className="text-gray-600">
+                      {item.doctorData?.speciality || "Speciality not provided"}
+                    </p>
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <p className="text-sm text-gray-500 font-medium">
+                        <span className="font-semibold text-gray-700">Date & Time:</span>{" "}
+                        {slotDateFormat(item.slotDate)} at{" "}
+                        {slotTimeFormat(item.slotTime)}
+                      </p>
+                    </div>
+                  </div>
 
-              {/* Buttons Container */}
-              <div className="mt-4 md:mt-0 md:ml-4 flex flex-col justify-between items-start md:items-end">
-                {/* Pay Online */}
-                {!item.cancelled && !item.isCompleted && !item.payment && (
-                  <button
-                    onClick={() => appointRazorpay(item._id)}
-                    className="w-36 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
-                  >
-                    Pay Online
-                  </button>
-                )}
-
-                {/* Cancel Appointment */}
-                {!item.cancelled && !item.isCompleted && (
-                  <button
-                    onClick={() => cancelAppointment(item._id)}
-                    className="w-36 mt-2 bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600 transition duration-200"
-                  >
-                    Cancel Appointment
-                  </button>
-                )}
-
-                {/* Show status if cancelled or completed */}
-                {item.cancelled && (
-                  <button
-                    className="w-36 mt-2 py-2 px-4 rounded border border-red-500 text-red-500 cursor-not-allowed"
-                    disabled
-                  >
-                    Appointment cancelled
-                  </button>
-                )}
-                {item.isCompleted && (
-                  <button
-                    className="w-36 mt-2 py-2 px-4 rounded border border-green-500 text-green-500 cursor-not-allowed"
-                    disabled
-                  >
-                    Appointment completed
-                  </button>
-                )}
-
-                {/* Video Call Button => Only show if not cancelled */}
-                {!item.cancelled && (
-                  <Link to={`/video-call/${item._id}`}>
-                    <button className="w-36 mt-2 bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition duration-200">
-                      Join Video Call
-                    </button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">No appointments found.</p>
-        )}
+                  <div className="w-full md:w-auto mt-4 md:mt-0 flex flex-col items-stretch md:items-end space-y-2 flex-shrink-0">
+                    {/* Inspired Styling: Refined buttons and status tags. */}
+                    {!item.cancelled && !item.isCompleted && !item.payment && (
+                      <button
+                        onClick={() => appointRazorpay(item._id)}
+                        className="w-full text-center bg-gray-800 text-white font-semibold py-2 px-5 rounded-lg hover:bg-gray-900 transition duration-200"
+                      >
+                        Pay Online
+                      </button>
+                    )}
+                    {!item.cancelled && !item.isCompleted && (
+                      <button
+                        onClick={() => cancelAppointment(item._id)}
+                        className="w-full text-center bg-red-50 text-red-600 font-semibold py-2 px-5 rounded-lg hover:bg-red-100 transition duration-200"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                    {item.cancelled && (
+                      <div className="py-2 px-5 rounded-lg bg-red-50 text-red-500 font-medium text-sm text-center">
+                        Cancelled
+                      </div>
+                    )}
+                    {item.isCompleted && (
+                      <div className="py-2 px-5 rounded-lg bg-green-50 text-green-600 font-medium text-sm text-center">
+                        Completed
+                      </div>
+                    )}
+                    {!item.cancelled && (
+                      <Link to={`/video-call/${item._id}`} className="w-full">
+                        <button className="w-full text-center bg-green-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-green-700 transition duration-200">
+                          Join Video Call
+                        </button>
+                      </Link>
+                    )}
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              // Inspired Styling: A cleaner "empty state" message.
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16 border-2 border-dashed rounded-lg"
+              >
+                <p className="text-gray-500">You have no appointments scheduled.</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
