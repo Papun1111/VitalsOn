@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { AdminContext } from "../../Context/AdminContext";
 import { AppContext } from "../../Context/AppContext";
 import assets from "../../assets/assets";
@@ -12,9 +12,9 @@ const AllAppointments = () => {
     if (atoken) {
       getAllAppointments();
     }
-  }, [atoken]);
+  }, [atoken, getAllAppointments]);
 
-  // Helper function to format date and time nicely
+  // Helper function to format date and time
   const formatDateTime = (date, time) => {
     const dt = new Date(`${date}T${time}`);
     if (isNaN(dt)) return `${date}, ${time}`;
@@ -22,345 +22,119 @@ const AllAppointments = () => {
   };
 
   // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
-  };
+  const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } } };
+  const itemVariants = { hidden: { opacity: 0, y: 20, scale: 0.95 }, visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 12 } } };
+  const headerVariants = { hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 15 } } };
+  const buttonVariants = { hover: { scale: 1.1, rotate: 5, transition: { type: "spring", stiffness: 300, damping: 15 } }, tap: { scale: 0.95, rotate: -5 } };
 
-  const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20,
-      scale: 0.95
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 12
-      }
-    }
-  };
-
-  const headerVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 120,
-        damping: 15
-      }
-    }
-  };
-
-  const cardHoverVariants = {
-    hover: {
-      scale: 1.02,
-      y: -4,
-      boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
-    }
-  };
-
-  const buttonVariants = {
-    hover: {
-      scale: 1.1,
-      rotate: 5,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 15
-      }
-    },
-    tap: {
-      scale: 0.95,
-      rotate: -5
-    }
-  };
+  if (!appointments) {
+    return (
+        <div className="bg-zinc-900 w-full min-h-screen p-6 flex items-center justify-center">
+            <div className="text-lime-400 text-2xl font-semibold animate-pulse">Loading Appointments...</div>
+        </div>
+    );
+  }
 
   return (
-    <motion.div 
-      className="p-6 w-full max-w-7xl mx-auto my-8"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <motion.div variants={headerVariants}>
-        <h1 className="text-4xl font-extrabold mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-teal-600 bg-clip-text text-transparent">
-          All Appointments
-        </h1>
-        <p className="text-gray-600 text-lg mb-8 font-medium">
-          Manage and track all patient appointments
-        </p>
-      </motion.div>
-
-      {/* Grid/table view for medium and larger screens */}
-      <div className="hidden md:block overflow-x-auto">
+    <div className="min-h-screen bg-zinc-900 w-full">
         <motion.div 
-          className="min-w-full bg-white rounded-2xl shadow-lg overflow-hidden"
-          variants={itemVariants}
+            className="p-6 w-full max-w-7xl mx-auto"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
         >
-          <motion.div 
-            className="grid grid-cols-7 gap-4 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-200"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="font-bold text-gray-700 text-sm uppercase tracking-wider">#</div>
-            <div className="font-bold text-gray-700 text-sm uppercase tracking-wider">Patient</div>
-            <div className="font-bold text-gray-700 text-sm uppercase tracking-wider">Age</div>
-            <div className="font-bold text-gray-700 text-sm uppercase tracking-wider">Date & Time</div>
-            <div className="font-bold text-gray-700 text-sm uppercase tracking-wider">Doctor</div>
-            <div className="font-bold text-gray-700 text-sm uppercase tracking-wider">Fee</div>
-            <div className="font-bold text-gray-700 text-sm uppercase tracking-wider">Action</div>
-          </motion.div>
-          <AnimatePresence>
-            {appointments.map((item, index) => (
-              <motion.div
-                key={item._id || index}
-                className="grid grid-cols-7 gap-4 p-6 border-b border-gray-100 hover:bg-gradient-to-r hover:from-blue-25 hover:to-indigo-25 transition-all duration-300"
-                variants={itemVariants}
-                whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.05)" }}
-                layout
-              >
-                {/* Index */}
-                <motion.div 
-                  className="flex items-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <span className="text-lg font-semibold text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center">
-                    {index + 1}
-                  </span>
-                </motion.div>
-                
-                {/* Patient */}
-                <motion.div 
-                  className="flex items-center"
-                  whileHover={{ x: 4 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <motion.img
-                    src={item.userData.image}
-                    alt="patient"
-                    className="w-12 h-12 rounded-full mr-3 object-cover border-2 border-blue-200"
-                    whileHover={{ scale: 1.1, borderColor: "#3B82F6" }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  />
-                  <div>
-                    <span className="font-semibold text-gray-800 text-base">{item.userData.name}</span>
-                  </div>
-                </motion.div>
-                
-                {/* Age */}
-                <motion.div 
-                  className="flex items-center"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <span className="text-gray-700 font-medium text-base">
-                    {calculateAge(item.userData.dob)} yrs
-                  </span>
-                </motion.div>
-                
-                {/* Date & Time */}
-                <motion.div 
-                  className="flex items-center"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="bg-blue-50 px-3 py-2 rounded-lg">
-                    <span className="text-blue-800 font-medium text-sm">
-                      {formatDateTime(item.slotDate, item.slotTime)}
-                    </span>
-                  </div>
-                </motion.div>
-                
-                {/* Doctor */}
-                <motion.div 
-                  className="flex items-center"
-                  whileHover={{ x: 4 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <motion.img
-                    src={item.doctorData.image}
-                    alt="doctor"
-                    className="w-12 h-12 rounded-full mr-3 object-cover border-2 border-green-200"
-                    whileHover={{ scale: 1.1, borderColor: "#10B981" }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  />
-                  <div>
-                    <span className="font-semibold text-gray-800 text-base">{item.doctorData.name}</span>
-                  </div>
-                </motion.div>
-                
-                {/* Fee */}
-                <motion.div 
-                  className="flex items-center"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <span className="text-green-600 font-bold text-lg bg-green-50 px-3 py-1 rounded-lg">
-                    {currency}{item.amount}
-                  </span>
-                </motion.div>
-                
-                {/* Action */}
-                <motion.div className="flex items-center">
-                  {item.cancelled ? (
-                    <motion.span 
-                      className="text-red-600 text-sm font-bold bg-red-50 px-3 py-2 rounded-full border border-red-200"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 200 }}
-                    >
-                      Cancelled
-                    </motion.span>
-                  ) : item.isCompleted ? (
-                    <motion.span 
-                      className="text-green-600 text-sm font-bold bg-green-50 px-3 py-2 rounded-full border border-green-200"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 200 }}
-                    >
-                      Completed
-                    </motion.span>
-                  ) : (
-                    <motion.img
-                      onClick={() => cancelAppointment(item._id)}
-                      className="w-10 h-10 cursor-pointer p-2 rounded-full hover:bg-red-50 transition-colors"
-                      src={assets.cancel_icon}
-                      alt="Cancel"
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      whileTap="tap"
-                    />
-                  )}
-                </motion.div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-
-      {/* Card view for small screens */}
-      <motion.div 
-        className="md:hidden space-y-6"
-        variants={containerVariants}
-      >
-        <AnimatePresence>
-          {appointments.map((item, index) => (
-            <motion.div
-              key={item._id || index}
-              className="bg-white shadow-lg rounded-2xl p-6 border border-gray-200 overflow-hidden"
-              variants={itemVariants}
-              whileHover={cardHoverVariants.hover}
-              layout
-            >
-              <motion.div 
-                className="flex items-center justify-between mb-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div className="flex items-center">
-                  <motion.img
-                    src={item.userData.image}
-                    alt="patient"
-                    className="w-14 h-14 rounded-full mr-4 object-cover border-3 border-blue-200"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  />
-                  <div>
-                    <p className="font-bold text-gray-800 text-lg">{item.userData.name}</p>
-                    <p className="text-gray-600 text-sm font-medium">Age: {calculateAge(item.userData.dob)} years</p>
-                  </div>
-                </div>
-                <motion.span 
-                  className="font-bold text-2xl text-blue-600 bg-blue-50 rounded-full w-12 h-12 flex items-center justify-center"
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                >
-                  {index + 1}
-                </motion.span>
-              </motion.div>
-              
-              <motion.div 
-                className="mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl"
-                whileHover={{ scale: 1.02 }}
-              >
-                <p className="font-bold text-gray-700 text-sm uppercase tracking-wider mb-1">Date & Time:</p>
-                <p className="text-blue-800 font-semibold text-base">{formatDateTime(item.slotDate, item.slotTime)}</p>
-              </motion.div>
-              
-              <motion.div 
-                className="mb-4 flex items-center bg-green-50 p-4 rounded-xl"
-                whileHover={{ scale: 1.02 }}
-              >
-                <motion.img
-                  src={item.doctorData.image}
-                  alt="doctor"
-                  className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-green-200"
-                  whileHover={{ scale: 1.1 }}
-                />
-                <div className="flex-1">
-                  <p className="font-bold text-gray-800 text-base">{item.doctorData.name}</p>
-                  <p className="text-green-600 font-bold text-lg">Fee: {currency}{item.amount}</p>
-                </div>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                {item.cancelled ? (
-                  <motion.span 
-                    className="inline-block text-red-600 text-base font-bold bg-red-50 px-4 py-2 rounded-full border-2 border-red-200"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 200 }}
-                  >
-                    Cancelled
-                  </motion.span>
-                ) : item.isCompleted ? (
-                  <motion.span 
-                    className="inline-block text-green-600 text-base font-bold bg-green-50 px-4 py-2 rounded-full border-2 border-green-200"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 200 }}
-                  >
-                    Completed
-                  </motion.span>
-                ) : (
-                  <motion.img
-                    onClick={() => cancelAppointment(item._id)}
-                    className="w-12 h-12 cursor-pointer p-2 rounded-full hover:bg-red-50 transition-colors"
-                    src={assets.cancel_icon}
-                    alt="Cancel"
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                  />
-                )}
-              </motion.div>
+            <motion.div variants={headerVariants} className="mb-8">
+                <h1 className="text-4xl font-extrabold mb-2 text-zinc-100">
+                    All Appointments
+                </h1>
+                <p className="text-zinc-400 text-lg font-medium">
+                    Manage and track all patient appointments
+                </p>
             </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-    </motion.div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+                <motion.div 
+                    className="min-w-full bg-zinc-800 rounded-lg shadow-lg overflow-hidden border border-zinc-700/80"
+                    variants={itemVariants}
+                >
+                    <div className="grid grid-cols-7 gap-4 bg-zinc-900/80 p-5">
+                        {["#", "Patient", "Age", "Date & Time", "Doctor", "Fee", "Action"].map(header => (
+                            <div key={header} className="font-bold text-zinc-400 text-sm uppercase tracking-wider">{header}</div>
+                        ))}
+                    </div>
+                    <AnimatePresence>
+                        {appointments.map((item, index) => (
+                            <motion.div
+                                key={item._id || index}
+                                className="grid grid-cols-7 gap-4 p-5 items-center border-t border-zinc-700/80 hover:bg-zinc-700/50 transition-colors duration-200"
+                                variants={itemVariants}
+                                layout
+                            >
+                                <span className="font-semibold text-zinc-400">{index + 1}</span>
+                                <div className="flex items-center">
+                                    <img src={item.userData.image} alt="patient" className="w-10 h-10 rounded-full mr-3 object-cover border-2 border-zinc-600"/>
+                                    <span className="font-semibold text-zinc-100 text-base truncate">{item.userData.name}</span>
+                                </div>
+                                <span className="text-zinc-300 font-medium text-base">{calculateAge(item.userData.dob)} yrs</span>
+                                <span className="text-zinc-300 font-medium text-sm">{formatDateTime(item.slotDate, item.slotTime)}</span>
+                                <div className="flex items-center">
+                                    <img src={item.doctorData.image} alt="doctor" className="w-10 h-10 rounded-full mr-3 object-cover border-2 border-zinc-600"/>
+                                    <span className="font-semibold text-zinc-100 text-base truncate">{item.doctorData.name}</span>
+                                </div>
+                                <span className="text-lime-400 font-bold text-base">{currency}{item.amount}</span>
+                                <div className="flex items-center">
+                                    {item.cancelled ? <span className="text-red-400 text-xs font-bold bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">Cancelled</span>
+                                    : item.isCompleted ? <span className="text-green-400 text-xs font-bold bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">Completed</span>
+                                    : <motion.button onClick={() => cancelAppointment(item._id)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-500/10" variants={buttonVariants} whileHover="hover" whileTap="tap"><img src={assets.cancel_icon} alt="Cancel" className="w-5 h-5"/></motion.button>}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </motion.div>
+            </div>
+
+            {/* Mobile Card View */}
+            <motion.div className="md:hidden space-y-6" variants={containerVariants}>
+                <AnimatePresence>
+                    {appointments.map((item) => (
+                        <motion.div
+                            key={item._id}
+                            className="bg-zinc-800 shadow-lg rounded-lg p-5 border border-zinc-700/80"
+                            variants={itemVariants}
+                            layout
+                        >
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center min-w-0">
+                                    <img src={item.userData.image} alt="patient" className="w-12 h-12 rounded-full mr-4 object-cover border-2 border-zinc-600"/>
+                                    <div className="min-w-0">
+                                        <p className="font-bold text-zinc-100 text-lg truncate">{item.userData.name}</p>
+                                        <p className="text-zinc-400 text-sm">Age: {calculateAge(item.userData.dob)} years</p>
+                                    </div>
+                                </div>
+                                {item.cancelled ? <span className="text-red-400 text-xs font-bold bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">Cancelled</span>
+                                : item.isCompleted ? <span className="text-green-400 text-xs font-bold bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">Completed</span>
+                                : <motion.button onClick={() => cancelAppointment(item._id)} className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-red-500/10" variants={buttonVariants} whileHover="hover" whileTap="tap"><img src={assets.cancel_icon} alt="Cancel" className="w-6 h-6"/></motion.button>}
+                            </div>
+                            <div className="space-y-3">
+                                <div className="bg-zinc-900/70 p-3 rounded-md">
+                                    <p className="font-bold text-zinc-400 text-xs uppercase tracking-wider mb-1">Date & Time</p>
+                                    <p className="text-zinc-100 font-semibold text-base">{formatDateTime(item.slotDate, item.slotTime)}</p>
+                                </div>
+                                <div className="bg-zinc-900/70 p-3 rounded-md flex items-center justify-between">
+                                    <div className="flex items-center min-w-0">
+                                        <img src={item.doctorData.image} alt="doctor" className="w-10 h-10 rounded-full mr-3 object-cover border-2 border-zinc-600"/>
+                                        <p className="font-bold text-zinc-100 text-base truncate">{item.doctorData.name}</p>
+                                    </div>
+                                    <p className="text-lime-400 font-bold text-lg flex-shrink-0 ml-2">{currency}{item.amount}</p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </motion.div>
+        </motion.div>
+    </div>
   );
 };
 

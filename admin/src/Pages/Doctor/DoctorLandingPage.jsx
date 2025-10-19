@@ -3,191 +3,68 @@ import { motion } from 'motion/react';
 import { FaUserEdit, FaVideo, FaCalendarCheck, FaTachometerAlt, FaUserFriends } from 'react-icons/fa';
 import { HiOutlineChevronDoubleDown } from 'react-icons/hi';
 import { FiArrowRight } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const DoctorLandingPage = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 0.3,
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { 
-      opacity: 0, 
-      scale: 0.8,
-      rotateY: -15
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      rotateY: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    },
-    hover: {
-      scale: 1.05,
-      rotateY: 5,
-      z: 50,
-      boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.5)",
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
-  };
-
-  const iconVariants = {
-    hover: {
-      rotate: 360,
-      scale: 1.2,
-      transition: {
-        duration: 0.6,
-        ease: "easeInOut"
-      }
-    }
-  };
-
-  const buttonVariants = {
-    hover: {
-      scale: 1.05,
-      boxShadow: "0 10px 30px rgba(59, 130, 246, 0.4)",
-      transition: {
-        duration: 0.3
-      }
-    },
-    tap: {
-      scale: 0.95
-    }
-  };
+  // Animation variants (preserved)
+  const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { delayChildren: 0.3, staggerChildren: 0.2 } } };
+  const itemVariants = { hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } } };
+  const cardVariants = { hidden: { opacity: 0, scale: 0.8 }, visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } }, hover: { scale: 1.05, y: -8, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)", transition: { duration: 0.3, ease: "easeInOut" } } };
+  const buttonVariants = { hover: { scale: 1.05, boxShadow: "0 10px 30px rgba(163, 230, 53, 0.2)" }, tap: { scale: 0.95 } };
 
   const features = [
-    {
-      icon: FaUserEdit,
-      title: "Update Profile",
-      description: "Keep your profile current with the latest details and credentials.",
-      color: "from-purple-600 to-pink-600"
-    },
-    {
-      icon: FaVideo,
-      title: "Video Calls",
-      description: "Connect with your patients via seamless, high-quality video consultations.",
-      color: "from-blue-600 to-cyan-600"
-    },
-    {
-      icon: FaCalendarCheck,
-      title: "Appointments",
-      description: "Effortlessly schedule and manage your appointments in one intuitive interface.",
-      color: "from-green-600 to-emerald-600"
-    },
-    {
-      icon: FaTachometerAlt,
-      title: "Dashboard",
-      description: "Access real-time insights and analytics to monitor your performance.",
-      color: "from-orange-600 to-red-600"
-    },
-    {
-      icon: FaUserFriends,
-      title: "Patient List",
-      description: "Review and manage your patients' records and appointment history effortlessly.",
-      color: "from-indigo-600 to-purple-600"
-    }
+    { icon: FaUserEdit, title: "Update Profile", description: "Keep your profile current with the latest details and credentials." },
+    { icon: FaVideo, title: "Video Calls", description: "Connect with patients via seamless, high-quality video consultations." },
+    { icon: FaCalendarCheck, title: "Appointments", description: "Effortlessly schedule and manage your appointments in one intuitive interface." },
+    { icon: FaTachometerAlt, title: "Dashboard", description: "Access real-time insights and analytics to monitor your performance." },
+    { icon: FaUserFriends, title: "Patient List", description: "Review and manage your patients' records and appointment history." },
   ];
-
+  const navigate=useNavigate();
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 text-white overflow-hidden">
+    <div className="min-h-screen bg-zinc-900 text-white overflow-hidden">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
+          className="absolute -top-40 -right-40 w-80 h-80 bg-lime-500/10 rounded-full filter blur-3xl"
+          animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         />
         <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [360, 180, 0],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "linear"
-          }}
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-lime-500/10 rounded-full filter blur-3xl"
+          animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
         />
       </div>
 
       {/* Hero Section */}
       <motion.header 
-        className="relative flex flex-col items-center justify-center text-center py-20 px-4"
+        className="relative flex flex-col items-center justify-center text-center py-24 px-4"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div
+        <motion.h1 
+          className="text-6xl font-bold mb-4 text-zinc-100"
           variants={itemVariants}
-          className="mb-6"
         >
-          <motion.h1 
-            className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
-            animate={{
-              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          >
-            Doctor's Portal
-          </motion.h1>
-        </motion.div>
+          Doctor's Portal
+        </motion.h1>
         
         <motion.p 
-          className="text-xl mb-8 max-w-2xl text-gray-300"
+          className="text-xl mb-10 max-w-2xl text-zinc-400"
           variants={itemVariants}
         >
-          Welcome to your personal dashboard. Here you can update your profile, video call with patients, manage appointments, view your dashboard, and access your patient list—all in one place.
+          Welcome to your personal dashboard. Here you can manage appointments, consult with patients, and view your performance—all in one place.
         </motion.p>
         
         <motion.button 
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-3 font-semibold"
+          className="bg-lime-400 text-zinc-900 px-8 py-4 rounded-lg shadow-lg flex items-center gap-3 font-bold text-lg"
           variants={buttonVariants}
           whileHover="hover"
           whileTap="tap"
+          onClick={()=>navigate("/doctor-dashboard")}
         >
-          Get Started 
-          <motion.div
-            animate={{ x: [0, 5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <FiArrowRight />
-          </motion.div>
+          Go to Dashboard <FiArrowRight />
         </motion.button>
       </motion.header>
 
@@ -200,7 +77,7 @@ const DoctorLandingPage = () => {
       >
         <div className="container mx-auto px-4">
           <motion.h2 
-            className="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
+            className="text-4xl font-bold text-center mb-16 text-zinc-100"
             variants={itemVariants}
           >
             Your Key Tools
@@ -213,41 +90,21 @@ const DoctorLandingPage = () => {
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                className={`cursor-pointer bg-gradient-to-br ${feature.color} bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 border border-white border-opacity-20 shadow-2xl`}
+                className="cursor-pointer bg-zinc-800 rounded-2xl p-8 border border-zinc-700 shadow-xl"
                 variants={cardVariants}
                 whileHover="hover"
-                style={{ perspective: 1000 }}
               >
-                <motion.div
-                  variants={iconVariants}
-                  whileHover="hover"
-                  className="mb-6"
-                >
-                  <feature.icon className="text-5xl text-white" />
-                </motion.div>
+                <div className="mb-6 text-lime-400 text-5xl">
+                    <feature.icon />
+                </div>
                 
-                <motion.h3 
-                  className="text-2xl font-bold mb-4 text-white"
-                  whileHover={{ x: 5 }}
-                  transition={{ duration: 0.2 }}
-                >
+                <h3 className="text-2xl font-bold mb-4 text-zinc-100">
                   {feature.title}
-                </motion.h3>
+                </h3>
                 
-                <motion.p 
-                  className="text-gray-300 leading-relaxed"
-                  whileHover={{ x: 5 }}
-                  transition={{ duration: 0.2, delay: 0.1 }}
-                >
+                <p className="text-zinc-400 leading-relaxed">
                   {feature.description}
-                </motion.p>
-
-                {/* Hover glow effect */}
-                <motion.div
-                  className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 rounded-2xl`}
-                  whileHover={{ opacity: 0.1 }}
-                  transition={{ duration: 0.3 }}
-                />
+                </p>
               </motion.div>
             ))}
           </motion.div>
@@ -255,42 +112,26 @@ const DoctorLandingPage = () => {
       </motion.section>
 
       {/* Animated Scroll Cue */}
-      <motion.section 
+      <motion.div 
         className="text-center py-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
         <motion.div
-          animate={{ 
-            y: [0, -10, 0],
-            opacity: [0.5, 1, 0.5]
-          }}
-          transition={{ 
-            duration: 2, 
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <HiOutlineChevronDoubleDown className="mx-auto text-4xl text-blue-400" />
+          <HiOutlineChevronDoubleDown className="mx-auto text-4xl text-lime-400" />
         </motion.div>
-      </motion.section>
+      </motion.div>
 
       {/* Footer */}
-      <motion.footer 
-        className="py-8 text-center bg-gradient-to-r from-slate-900 to-gray-900 border-t border-gray-700"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <motion.p 
-          className="text-gray-400"
-          whileHover={{ color: "#ffffff" }}
-          transition={{ duration: 0.3 }}
-        >
+      <footer className="py-8 text-center border-t border-zinc-700/60">
+        <p className="text-zinc-500">
           &copy; {new Date().getFullYear()} Doctor's Portal. All rights reserved.
-        </motion.p>
-      </motion.footer>
+        </p>
+      </footer>
     </div>
   );
 };

@@ -1,19 +1,51 @@
+import { motion } from 'framer-motion';
 
-import { motion } from 'motion/react';
-import { FaUserMd, FaCalendarCheck, FaChartLine, FaLock } from 'react-icons/fa';
-import { HiOutlineChevronDoubleDown } from 'react-icons/hi';
-import { FiArrowRight } from 'react-icons/fi';
+// --- Icon Components (Replaced react-icons to fix build error) ---
+
+const FaUserMd = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
+    <path d="M12,2A5,5,0,0,0,7,7A5,5,0,0,0,12,12A5,5,0,0,0,17,7A5,5,0,0,0,12,2M9,14V22H5V14H3V12H9V14M15.59,14.41L18.17,17L20.75,14.41L22.17,15.83L19.59,18.41L22.17,21L20.75,22.41L18.17,19.83L15.59,22.41L14.17,21L16.75,18.41L14.17,15.83L15.59,14.41Z" />
+  </svg>
+);
+
+const FaCalendarCheck = () => (
+  <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" className="w-full h-full">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="16" y1="2" x2="16" y2="6"></line>
+    <line x1="8" y1="2" x2="8" y2="6"></line>
+    <line x1="3" y1="10" x2="21" y2="10"></line>
+    <path d="m9 16 2 2 4-4"></path>
+  </svg>
+);
+
+const FaChartLine = () => (
+  <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" className="w-full h-full">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+  </svg>
+);
+
+const FaLock = () => (
+  <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" className="w-full h-full">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+  </svg>
+);
+
+const FiArrowRight = () => (
+  <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" className="w-full h-full">
+    <line x1="5" y1="12" x2="19" y2="12"></line>
+    <polyline points="12 5 19 12 12 19"></polyline>
+  </svg>
+);
+
 
 const AdminLandingPage = () => {
-  // Animation variants
+  // Animation variants are preserved to maintain smooth transitions.
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.1
-      }
+      transition: { staggerChildren: 0.2, delayChildren: 0.1 }
     }
   };
 
@@ -22,11 +54,7 @@ const AdminLandingPage = () => {
     visible: {
       y: 0,
       opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 12
-      }
+      transition: { type: "spring", stiffness: 100, damping: 12 }
     }
   };
 
@@ -35,129 +63,51 @@ const AdminLandingPage = () => {
     visible: {
       y: 0,
       opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 80,
-        damping: 15,
-        duration: 0.8
-      }
+      transition: { type: "spring", stiffness: 80, damping: 15, duration: 0.8 }
     }
   };
 
   const buttonVariants = {
     hover: {
       scale: 1.05,
-      boxShadow: "0 10px 30px rgba(59, 130, 246, 0.3)",
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 10
-      }
+      boxShadow: "0 10px 30px rgba(163, 230, 53, 0.2)",
+      transition: { type: "spring", stiffness: 400, damping: 10 }
     },
-    tap: {
-      scale: 0.95
-    }
+    tap: { scale: 0.95 }
   };
 
   const cardVariants = {
-    hidden: { y: 50, opacity: 0, rotateX: -15 },
+    hidden: { y: 50, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
-      rotateX: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
+      transition: { type: "spring", stiffness: 100, damping: 15 }
     },
     hover: {
       y: -10,
-      rotateY: 5,
-      scale: 1.02,
       boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
-    }
-  };
-
-  const iconVariants = {
-    hover: {
-      scale: 1.2,
-      rotate: 360,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 15
-      }
-    }
-  };
-
-  const floatingVariants = {
-    animate: {
-      y: [-10, 10, -10],
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
-  };
-
-  const pulseVariants = {
-    animate: {
-      scale: [1, 1.1, 1],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
-  };
-
-  const backgroundVariants = {
-    animate: {
-      background: [
-        "linear-gradient(45deg, #0f172a, #1e293b, #334155)",
-        "linear-gradient(45deg, #1e293b, #334155, #475569)",
-        "linear-gradient(45deg, #0f172a, #1e293b, #334155)"
-      ],
-      transition: {
-        duration: 8,
-        repeat: Infinity,
-        ease: "linear"
-      }
+      transition: { type: "spring", stiffness: 300, damping: 20 }
     }
   };
 
   return (
-    <motion.div
-      variants={backgroundVariants}
-      animate="animate"
-      className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden"
-    >
-      {/* Animated background particles */}
+    <div className="min-h-screen bg-zinc-900 text-white overflow-hidden">
+      {/* Background particles updated to the new accent color */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-blue-400/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
+            className="absolute w-2 h-2 bg-lime-400/10 rounded-full"
+            style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
             animate={{
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-              opacity: [0.2, 0.8, 0.2],
+              x: [0, Math.random() * 100 - 50, 0],
+              y: [0, Math.random() * 100 - 50, 0],
+              opacity: [0, 0.5, 0],
             }}
             transition={{
-              duration: Math.random() * 3 + 2,
+              duration: Math.random() * 5 + 5,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: "linear",
             }}
           />
         ))}
@@ -168,36 +118,28 @@ const AdminLandingPage = () => {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="flex flex-col items-center justify-center text-center py-20 px-4 relative z-10"
+        className="flex flex-col items-center justify-center text-center py-24 px-4 relative z-10"
       >
         <motion.h1
           variants={headerVariants}
-          className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent"
+          className="text-6xl md:text-7xl font-bold mb-6 text-slate-100"
         >
           VitalsOn Panel
         </motion.h1>
-        
         <motion.p
           variants={itemVariants}
-          className="text-xl md:text-2xl mb-8 max-w-3xl text-slate-300 leading-relaxed"
+          className="text-xl md:text-2xl mb-10 max-w-3xl text-zinc-400 leading-relaxed"
         >
-          Welcome to VitalsOn Panel, your ultimate admin dashboard for managing healthcare services. 
-          Easily add doctors, organize appointments, and monitor real-time analytics—all in one place.
+          Welcome to VitalsOn Panel, your ultimate admin dashboard for managing healthcare services.
         </motion.p>
-        
         <motion.button
           variants={buttonVariants}
           whileHover="hover"
           whileTap="tap"
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 flex items-center gap-3 text-lg font-semibold"
+          className="bg-lime-400 text-zinc-900 px-8 py-4 rounded-lg shadow-lg hover:shadow-lime-500/20 transition-shadow duration-300 flex items-center gap-3 text-lg font-bold"
         >
           Get Started 
-          <motion.div
-            animate={{ x: [0, 5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <FiArrowRight />
-          </motion.div>
+          <span className="w-6 h-6"><FiArrowRight /></span>
         </motion.button>
       </motion.header>
 
@@ -209,85 +151,32 @@ const AdminLandingPage = () => {
         variants={containerVariants}
         className="py-20 px-4 relative z-10"
       >
-        <motion.div variants={itemVariants} className="container mx-auto">
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold text-center mb-16 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent"
-          >
+        <div className="container mx-auto">
+          <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-center mb-16 text-slate-100">
             Key Features
           </motion.h2>
-          
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Feature Cards */}
             {[
-              {
-                icon: FaUserMd,
-                title: "Add Doctors",
-                description: "Easily create comprehensive profiles to expand your team of healthcare professionals.",
-                color: "from-emerald-500 to-teal-500"
-              },
-              {
-                icon: FaCalendarCheck,
-                title: "Manage Appointments",
-                description: "Schedule and organize appointments with an intuitive and user-friendly interface.",
-                color: "from-blue-500 to-cyan-500"
-              },
-              {
-                icon: FaChartLine,
-                title: "Real-time Analytics",
-                description: "Gain instant insights with live data to monitor system performance and outcomes.",
-                color: "from-purple-500 to-pink-500"
-              },
-              {
-                icon: FaLock,
-                title: "Secure Access",
-                description: "Protect your admin panel with robust security measures ensuring safe operations.",
-                color: "from-orange-500 to-red-500"
-              }
+              { icon: FaUserMd, title: "Add Doctors", description: "Easily create comprehensive profiles to expand your team of healthcare professionals." },
+              { icon: FaCalendarCheck, title: "Manage Appointments", description: "Schedule and organize appointments with an intuitive and user-friendly interface." },
+              { icon: FaChartLine, title: "Real-time Analytics", description: "Gain instant insights with live data to monitor system performance and outcomes." },
+              { icon: FaLock, title: "Secure Access", description: "Protect your admin panel with robust security measures ensuring safe operations." }
             ].map((feature, index) => (
               <motion.div
                 key={index}
                 variants={cardVariants}
                 whileHover="hover"
-                className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50 shadow-2xl relative overflow-hidden group"
+                className="bg-zinc-800 rounded-2xl p-6 border border-zinc-700/80 shadow-xl"
               >
-                {/* Card background glow */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
-                
-                <motion.div
-                  variants={iconVariants}
-                  whileHover="hover"
-                  className={`text-5xl mb-6 bg-gradient-to-br ${feature.color} bg-clip-text text-transparent relative z-10`}
-                >
+                <div className="w-12 h-12 text-5xl mb-6 text-lime-400">
                   <feature.icon />
-                </motion.div>
-                
-                <h3 className="text-2xl font-bold mb-4 text-white relative z-10">
-                  {feature.title}
-                </h3>
-                
-                <p className="text-slate-300 leading-relaxed relative z-10">
-                  {feature.description}
-                </p>
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-slate-100">{feature.title}</h3>
+                <p className="text-zinc-400 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
-        </motion.div>
-      </motion.section>
-
-      {/* Animated Scroll Cue */}
-      <motion.section
-        variants={floatingVariants}
-        animate="animate"
-        className="text-center py-10 relative z-10"
-      >
-        <motion.div
-          variants={pulseVariants}
-          animate="animate"
-          className="inline-block"
-        >
-          <HiOutlineChevronDoubleDown className="mx-auto text-4xl text-blue-400" />
-        </motion.div>
+        </div>
       </motion.section>
 
       {/* Stats Section */}
@@ -296,7 +185,7 @@ const AdminLandingPage = () => {
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVariants}
-        className="py-20 px-4 bg-slate-800/30 backdrop-blur-sm relative z-10"
+        className="py-20 px-4 bg-zinc-800/50 relative z-10"
       >
         <div className="container mx-auto">
           <div className="grid md:grid-cols-3 gap-8 text-center">
@@ -305,44 +194,22 @@ const AdminLandingPage = () => {
               { number: "500+", label: "Healthcare Professionals" },
               { number: "99.9%", label: "System Uptime" }
             ].map((stat, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                className="p-6"
-              >
-                <motion.h3
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 100, delay: index * 0.1 }}
-                  className="text-4xl md:text-5xl font-bold text-blue-400 mb-2"
-                >
-                  {stat.number}
-                </motion.h3>
-                <p className="text-slate-300 text-lg">{stat.label}</p>
+              <motion.div key={index} variants={itemVariants} className="p-6">
+                <h3 className="text-4xl md:text-5xl font-bold text-lime-400 mb-2">{stat.number}</h3>
+                <p className="text-zinc-400 text-lg">{stat.label}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </motion.section>
-
+      
       {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="py-8 text-center bg-slate-900/80 backdrop-blur-sm border-t border-slate-700/50 relative z-10"
-      >
-        <motion.p
-          animate={{ opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-slate-400"
-        >
-          &copy; {new Date().getFullYear()} VitalsOn Panel. All rights reserved.
-        </motion.p>
-      </motion.footer>
-    </motion.div>
+      <footer className="py-8 text-center border-t border-zinc-700/60 relative z-10">
+        <p className="text-zinc-500">&copy; {new Date().getFullYear()} VitalsOn Panel. All rights reserved.</p>
+      </footer>
+    </div>
   );
 };
 
 export default AdminLandingPage;
+
